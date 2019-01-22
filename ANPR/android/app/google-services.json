@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "444993835819",
+    "firebase_url": "https://anpr-live.firebaseio.com",
+    "project_id": "anpr-live",
+    "storage_bucket": "anpr-live.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444993835819:android:282db5e5310b1d74",
+        "android_client_info": {
+          "package_name": "com.digimind.anprlive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "444993835819-7ojsb1tevbhk1muehodfcm6ngaihr9hi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmI3eqDq2-_uJ49s3WqqKu9UVnodYn-FI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444993835819:android:eeb0afe91bf796f1",
+        "android_client_info": {
+          "package_name": "com.digimind.vdp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "444993835819-7ojsb1tevbhk1muehodfcm6ngaihr9hi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmI3eqDq2-_uJ49s3WqqKu9UVnodYn-FI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

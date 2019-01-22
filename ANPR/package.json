@@ -1,0 +1,41 @@
+{
+  "name": "MPPVDP",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "mime-type": "^3.0.5",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
+    "path": "^0.12.7",
+    "prop-types": "^15.6.2",
+    "react": "16.6.1",
+    "react-native": "0.57.5",
+    "react-native-confirmation-code-input": "^1.0.4",
+    "react-native-datepicker": "^1.7.2",
+    "react-native-elements": "^1.0.0-beta5",
+    "react-native-firebase": "^5.1.0",
+    "react-native-linear-gradient": "^2.4.2",
+    "react-native-maps": "^0.22.1",
+    "react-native-multiple-select": "^0.4.4",
+    "react-native-photo-view": "^1.5.2",
+    "react-native-progress": "^3.5.0",
+    "react-native-read-more-text": "^1.1.0",
+    "react-native-rest-client": "^0.1.1",
+    "react-native-simple-toast": "0.0.8",
+    "react-native-vector-icons": "^4.6.0",
+    "react-navigation": "^2.7.0"
+  },
+  "devDependencies": {
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.49.2",
+    "react-test-renderer": "16.6.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
