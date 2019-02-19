@@ -158,7 +158,7 @@ export default class VehicleNotMatched extends Component {
         company_id: company_id,
         AuthKey: "MPP0L1CERHQ"
       }
-      this.showProgress(true);
+     // this.showProgress(true);
       Api.GetDistrict(data).then(res => {
         console.log('GetDistrict',res);
         this.showProgress(false);
@@ -213,7 +213,7 @@ export default class VehicleNotMatched extends Component {
       company_id:this.state.userInfo.CompanyID,
       page_index:this.state.page,
       
-      page_size:5,
+      page_size:10,
       AuthKey:"MPP0L1CERHQ"
     }
     
@@ -237,7 +237,7 @@ export default class VehicleNotMatched extends Component {
   }).catch(err =>{
         this.showProgress(false);
       console.log('userinfoerror',err)
-      Toast.show("Please check network connection");
+      Toast.show("Please check network connection..!!!");
   })
   }
 
@@ -248,7 +248,8 @@ export default class VehicleNotMatched extends Component {
 //comment
 
 reload = () => {
-  this.getSuspectedVehicleNotMatchedList()
+  //this.getSuspectedVehicleNotMatchedList()
+  this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id);
 }
 
   renderList({item}) {

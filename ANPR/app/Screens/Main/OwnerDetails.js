@@ -56,7 +56,7 @@ export default class OwnerDetails extends Component {
       modalVisible : false,
       refreshing : false,
       registration_number: null,
-      vehicle_Detail:"",
+      vehicle_Detail:this.props.navigation.getParam('owner_data'),
       items:''
     }
     this.reload = this.reload.bind(this);
@@ -101,7 +101,8 @@ export default class OwnerDetails extends Component {
   async componentWillMount() {
     var NodeInfo = JSON.parse(await AsyncStorage.getItem('NodeUrl'));
     console.log("nodeinfo", NodeInfo.NodeURL);
-
+    this.setState({registration_number:this.state.vehicle_Detail.REGISTRATION_NO});
+    console.log("REGISTRATION_NO", this.state.registration_number);
     Api = new API(NodeInfo.NodeURL);
     this._getUserDetails();
 
@@ -148,46 +149,39 @@ export default class OwnerDetails extends Component {
       this.setState({userInfo: dt});
       console.log('dt',dt);
       //this.getMpTransPortData(dt,this.props.navigation.getParam('vehicle_data').LicenseNum);
-      this.setState({items:this.props.navigation.getParam('owner_data')})
       
+      this.getMpTransPortData();
     }).catch(err=>console.log('error occurred in user detail',err));
   }
-
-//   getMpTransPortData = (dt,registration_number) => {
-//     const data = {
-//       registration_number:registration_number,
-//       user_id:dt.UserID,
-//       company_id:dt.CompanyID,
-//       AuthKey:"MPP0L1CERHQ"
-//     }
+  getMpTransPortData = () => {
+    const data = {
+      registration_number:this.state.registration_number.trim(),
+      user_id:this.state.userInfo.UserID,
+      company_id:this.state.userInfo.CompanyID,
+      AuthKey:"MPP0L1CERHQ"
+    }
     
-//     console.log('data',data);
-
-//     this.showProgress(true);
-
-//     Api.MpTransPortData(data).then(res => {
+    console.log('data',data);
+    this.showProgress(true);
+    Api.MpTransPortData(data).then(res => {
        
-//       console.log('MpTransPortData',res);
-//          this.showProgress(false);
-//     if (res) {
-//       if (res.MessageType != 0) {
-//         Toast.show('We\'re facing some technical issues!');
-//         this.setState({ profileloading: false })
-//       } else {
-//         this.setState({vehicle_Detail:res.Object});
-//         console.log('vehicle_Detail',this.state.vehicle_Detail);
-//       }
-      
-//     }else{
-//      Toast.show('We\'re facing some technical issues!');
-//     }
-//   }).catch(err =>{
-
-//       console.log('userinfoerror',err)
-//       Toast.show("Please check network connection");
-//       this.setState({profileloading:false})
-//   })
-//   }
+      console.log('MpTransPortData',res);
+      this.showProgress(false); 
+    if (res) {
+      this.setState({items:res.Object});
+      console.log('items',this.state.items);
+      this.showProgress(false);
+    }else{
+      this.showProgress(false);
+     Toast.show('We\'re facing some technical issues!');
+    }
+  }).catch(err =>{
+       this.showProgress(false);
+      console.log('userinfoerror',err)
+      Toast.show("Please check network connection");
+      this.setState({profileloading:false})
+  })
+  }
 
  _onRefresh = () => {
   this.setState({refreshing: true});
