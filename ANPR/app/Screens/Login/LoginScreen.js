@@ -18,6 +18,8 @@ import {
   UIManager,
   AsyncStorage,
   KeyboardAvoidingView,
+  Modal,
+  TouchableOpacity,
 } from 'react-native';
 import { Input, 
   //Button,
@@ -62,6 +64,11 @@ export default class LoginScreen extends Component {
       imei:'',
       isPasswordSecure: true,
       isConnected: false,
+      modelOTPAuth:false,
+      OTP:'',
+      userDetail:'',
+      resendButton:true,
+      loading_message:'Loading...',
     };
   }
 
@@ -169,10 +176,10 @@ export default class LoginScreen extends Component {
       loginId,
       password,
     } = this.state;
-    this.setState({ isLoading: true });
+    //this.setState({ isLoading: true });
     // Simulate an API call
-    setTimeout(() => {
-      LayoutAnimation.easeInEaseOut();
+  //  setTimeout(() => {
+   //   LayoutAnimation.easeInEaseOut();
       this.setState({
        // isLoading: false,
         isLoginValid: this.validateLoginId(loginId) || this.userInput.shake(),
@@ -185,7 +192,7 @@ export default class LoginScreen extends Component {
         this.setState({isLoading:false});
       }
       //this.props.navigation.navigate("App");
-    }, 0);
+   // }, 0);
   }
 
   getLoginInfo = (loginid,password)=>{
@@ -199,29 +206,66 @@ export default class LoginScreen extends Component {
       "OsVersion":"",
       "AuthKey":"MPP0L1CERHQ",
     }
-
+    //this.setState({ isLoading: true })   
     console.log('data',data);
-
+   // this.setState({ isLoading: true }) 
      Api.UserLogin(data).then(res => {
        
          console.log('loginresponse',JSON.stringify(res));
-            
+         this.setState({ isLoading: false })   
        if (res) {
          if (res.MessageType != 0) {
            // this.displayToast("Invalid Credentials!!","danger");
            Toast.show('Invalid Credentials!!');
            this.setState({ isLoading: false })
          } else {
-           this._signInAsync(res.Object);
+         // this._signInAsync(res.Object);
+         this.setState({userDetail:res.Object,modelOTPAuth:true});
+         console.log('userDetail',this.state.userDetail);
+         setTimeout(()=>this.setState({resendButton:false}),30000);
          }
        }else{
-        Toast.show('Login error !!!');
+        Toast.show('Login error..!!!');
+        this.setState({ isLoading: false })
        }
      }).catch(err =>{
  
          console.log('loginerror',err)
-         Toast.show("Please check network connection");
+         Toast.show("Please check network connection..");
          this.setState({isLoading:false})
+     })
+   }
+
+   postOTP(){
+   const data={
+      userid:this.state.userDetail.UserID,
+      OTP:this.state.OTP,
+      AuthKey:'MPP0L1CERHQ'
+     }
+     console.log('postOTP data',data);
+     this.setState({isLoading:true});
+     Api.PostOTP(data).then(res=>{
+      this.setState({isLoading:false});
+      console.log('postOTP res',res);
+      if(res){
+        if(res.MessageType==0){
+          this.setState({modelOTPAuth:false});
+          this._signInAsync(this.state.userDetail);
+          Toast.show(res.Message);
+        }else{
+          Toast.show('Invalid OTP..!!');
+           this.setState({ isLoading: false })
+        }
+
+      }else{
+        Toast.show('Login error..!!!');
+        this.setState({ isLoading: false })
+       }
+
+     }).catch(err=>{
+       console.log('PostOTP error:',err);
+       Toast.show("Please check network connection..");
+       this.setState({isLoading:false})
      })
    }
  
@@ -315,69 +359,116 @@ export default class LoginScreen extends Component {
                   />
 
 
-                    {/* <Button
-                      buttonStyle={styles.loginButton}
-                      containerStyle={{marginVertical:10, marginTop: 32, flex: 0}}
-                      activeOpacity={0.8}
-                      title={'Log in'}
-                      onPress={()=> {this.requestPhonePermission(),Keyboard.dismiss()}}
-                      titleStyle={styles.loginTextButton}
-                      loading={isLoading}
-                      disabled={isLoading}
-                    /> */}
-
                     <LoginButton
-                      onPress={()=>{this.requestPhonePermission(),Keyboard.dismiss()}} />
+                      onPress={()=>{this.requestPhonePermission(),Keyboard.dismiss()}} 
+                      //onPress={()=>{this.setState({modelOTPAuth:true})}} 
+                      />
               
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    
-                    {/* <Button
-                      title={'Forgot your login details? get help signing in'}
-                      titleStyle={{ color: 'white',fontWeight:'normal', fontSize:12 }}
-                      buttonStyle={{ backgroundColor: 'transparent', marginTop: 15 }}
-                      disabled={isLoading}
-                      clear
-                      activeOpacity={0.7}
-                      underlayColor='transparent'
-                      onPress={() => this.props.navigation.navigate('ForgotPass')}
-                    /> */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>                  
 
-                  </View>
+                   </View>
                 
                 </View>
-
-               </View>
-           
+               </View>          
 
               <View style={{ alignItems: 'center', justifyContent:'center', flex: 1, flexDirection: 'column',marginTop:30 }}>
-                {/* <View style={{ width: '100%', justifyContent: 'center', backgroundColor: '#ffffff40' }}>
-                  <View style={{ backgroundColor: '#ffffff90', height: 0.5, width: '100%' }} />
-                  <Button
-                  //title={'MainTick Copyright © 2018 All Rights Reserved.'}
-                  title={'Dont`t have account ? Sign up'}
-                  titleStyle={{color: 'white',fontWeight:'normal',fontSize:12} }
-                  buttonStyle={{backgroundColor: 'transparent',margin:5}}
-                  disabled={isLoading}
-                  clear
-                  underlayColor='transparent'
-                  onPress={() => Linking.openURL('http://app.maintick.com/')}
-                />
-                </View> */}
-
-                {/* <Text style={{ color:'#fff', fontSize:16}}>Designed and Developed By</Text> */}
-
+             
                 <Image style={{ width:80, resizeMode:"contain"}}
-                      source={require('../../assets/DMT.png')} />
-                      {/* <Image style={{ width:80, resizeMode:"contain",marginTop:250}}
-                      source={require('../../assets/DMT.png')} /> */}
-
+                      source={require('../../assets/DMT.png')} />                   
               </View>
             </View>
           :
           <Text>Loading...</Text>
         }
+
+
         </ImageBackground>
         {/* </LinearGradient> */}
+
+       {/* model for OTP Authentication */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={this.state.modelOTPAuth}
+          onRequestClose={() => {
+            this.setState({ modelOTPAuth: false })
+          }}>  
+          
+           <View style={{ flex: 1, 
+                         backgroundColor: '#00000070',
+                         justifyContent:'center',
+                         alignItems:'center',
+                         alignContent:'center'}}>          
+              <View style={{width:'95%',backgroundColor:'white',borderRadius:5,padding:10}}>
+                <View style={{width:'100%',alignItems:'center'}}>
+                <Text style={{fontSize:16,color:'#00b300',textAlign:'center'}}>OTP has sent to registered mobile number<Text> {this.state.userDetail.Mobile}</Text>
+                </Text>
+                <Text style={{fontSize:15}}>
+                  {this.state.userDetail.FullName}
+                </Text>
+                </View>
+
+                <View style={{alignItems:'center'}}>                
+                <Input
+                 inputContainerStyle={styles.input_container_style1}
+                 inputStyle={styles.input_style1}
+                 autoFocus={false}
+                 autoCapitalize="none"
+                 keyboardType="phone-pad"
+                 maxLength={10}
+                 keyboardAppearance="dark"
+                 keyboardavoidingview={true}
+                 errorStyle={styles.errorInputStyle1}
+                 autoCorrect={false}
+                 blurOnSubmit={false}
+                 placeholder="OTP"
+                 //placeholderTextColor="#000000"
+                 onSubmitEditing={()=>{Keyboard.dismiss()}}
+                 leftIcon={<FontAwesome name='mobile' size={25} color='#1d3d78' />}
+                 onChangeText={otp => this.setState({ OTP:otp })}
+                />               
+                </View>
+
+               <View style={{flexDirection:'row',marginTop:30,width:'100%'}}> 
+                 <View style={{width:'50%',alignItems:'flex-start'}}>
+                 <Button
+                   title="Resend OTP"
+                   //ViewComponent={require('react-native-linear-gradient').default}
+                   containerViewStyle={{borderRadius:10}}
+                   buttonStyle={[{width:200, height:50, marginTop:10,marginBottom:10,borderRadius:40,backgroundColor:'#fc4236' }]}
+                   disabledStyle={{backgroundColor:'#b3b3b3'}}
+
+                   disabled={this.state.resendButton}
+                   
+                   onPress={()=>{this.login()}}
+                />
+                </View>
+                <View style={{width:'50%',alignItems:'flex-end'}}>
+                 <Button
+                   title="Submit"
+                   //ViewComponent={require('react-native-linear-gradient').default}
+                   containerViewStyle={{borderRadius:10}}
+                   buttonStyle={[{width:200, height:50, marginTop:10,marginBottom:10,borderRadius:40,backgroundColor:'#fc4236' }]}
+                   disabledStyle={{backgroundColor:'#b3b3b3'}}
+                   //disabled={props.disabled}
+                   
+                   onPress={()=>{this.postOTP()}}
+                />
+                </View>
+               </View>
+
+              </View>
+       
+           </View>
+       </Modal>       
+     {/* model for OTP Authentication */}
+
+     {/* {this.state.isLoading?
+                          <View style={{flex:1, elevation:2, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center',
+                           justifyContent: 'center', position: 'absolute', width: '100%', height: '100%' }}>
+                              <ActivityIndicator color='white' size='large' />
+                              <Text style={commonStyle.loading_text}>{this.state.loading_message}</Text>
+                          </View> : null} */}
       </View>
     );
   }
@@ -501,6 +592,25 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  input_style1:{
+    backgroundColor:'#ffffff00', 
+    color:'#000', 
+    padding:10,
+    height:50,
+    marginLeft:0,
+  },
+  input_container_style1:{
+    backgroundColor:'#ffffff',
+    marginTop:30,
+    borderColor: '#314399',
+    borderWidth:1,
+    borderRadius: 5,
+  },
+  errorInputStyle1: {
+    marginTop: 0,
+    textAlign: 'center',
+    color: '#F44336',
   },
   // placehodr:{
   //   placeholderTextColor:"#000",

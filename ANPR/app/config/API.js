@@ -77,6 +77,9 @@ export default class API extends RestClient {
     GetAppVersion(data){
         return this.POST('GetAppVersion',data);
     }
-
+    
+    PostOTP(data){
+        return this.POST('PostOTP',data);
+    }
 
 }
