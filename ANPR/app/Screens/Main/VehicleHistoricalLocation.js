@@ -5,7 +5,24 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text, ScrollView, FlatList, Alert, TextInput, Platform, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {StyleSheet, 
+  View,
+  Text, 
+  ScrollView, 
+  FlatList, 
+  Alert, 
+  TextInput, 
+  Platform, 
+  Keyboard, 
+  Image, 
+  AsyncStorage, 
+  NetInfo, 
+  ActivityIndicator, 
+  Modal, 
+  TouchableOpacity, 
+  RefreshControl,
+  Linking,
+} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -23,7 +40,7 @@ import colors from '../../colors';
 
 import CodeInput from 'react-native-confirmation-code-input';
 import PhotoView from 'react-native-photo-view';
-
+import DeviceInfo from 'react-native-device-info';
 var Api = null;
 
 const headerComponents = {
@@ -137,24 +154,24 @@ export default class Home extends Component {
     var data;
     if(Platform.OS==='android'){
       data = {
-        appName: 'com.digimind.vdp',
+        //appName: 'com.digimind.vdp',
         appType: 'Android',
-        AuthKey: MPP0L1CERHQ      
+        AuthKey: 'MPP0L1CERHQ'      
       }
     }else if(Platform.OS==='ios'){
       data = {
-        appName: 'com.digimind.vdp',
+        //appName: 'com.digimind.vdp',
         appType: 'Ios',
         AuthKey: 'MPP0L1CERHQ'      
       }
     }
 
     console.log('Version Data',data);
-
+    console.log('DeviceInfo.getBuildNumber():',DeviceInfo.getBuildNumber());
     Api.GetAppVersion(data).then((res)=>{
         console.log('GetAppVersion',res);
         if(Platform.OS==='android'){
-          if(res.Object.version>MediaDeviceInfo.getBuildNumber()){
+          if(res.Object.version>DeviceInfo.getBuildNumber()){
           Alert.alert(
             'Update Available!',
             'A new version of this app is available',

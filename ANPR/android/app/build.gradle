@@ -148,6 +148,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-device-info')
     compile project(':react-native-photo-view')
     compile project(':react-native-firebase')
     compile (project(':react-native-maps')){

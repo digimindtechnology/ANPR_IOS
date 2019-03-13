@@ -17,6 +17,7 @@
     "react-native-autocomplete-input": "^3.6.0",
     "react-native-confirmation-code-input": "^1.0.4",
     "react-native-datepicker": "^1.7.2",
+    "react-native-device-info": "^0.29.0",
     "react-native-elements": "^1.0.0-beta5",
     "react-native-firebase": "^5.1.0",
     "react-native-linear-gradient": "^2.4.2",
