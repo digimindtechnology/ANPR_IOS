@@ -32,6 +32,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-simple-toast';
+import UserManual from './UserManual';
 
 const HomeTab = TabNavigator(
     {
@@ -164,7 +165,7 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'Stolen Vehicle',
                 //drawerIcon: ({ tintColor }) => <MaterialCommunityIcons name="car-wash" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 25, height: 25}}
+                style={{width: 26, height: 26}}
                 source={require('../../assets/stolen_icon.png')}
                 />
             })
@@ -176,7 +177,7 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'MPTransport',
                 //drawerIcon: ({ tintColor }) => <MaterialIcons name="search" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 26, height: 26}}
+                style={{width: 27, height: 27}}
                 source={require('../../assets/tranport.png')}
                 />
             })
@@ -187,7 +188,7 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'Suspected Vehicle',
                 //drawerIcon: ({ tintColor }) => <SimpleLineIcons name="question" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 21, height: 21}}
+                style={{width: 22, height: 22}}
                 source={require('../../assets/suspected_icon.png')}
                 />
             })
@@ -223,8 +224,19 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'Notification',
                 //drawerIcon: ({ tintColor }) => <MaterialIcons name="notifications-none" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 26, height: 26}}
+                style={{width: 28, height: 28}}
                 source={require('../../assets/notification.png')}
+                />
+            })
+        },
+        UserManual:{
+            screen: UserManual,
+            navigationOptions: ({navigation})=>({
+                header:null,
+                drawerLabel:'User Manual',
+                drawerIcon:<Image
+                style={{width:25,height:25}}
+                source={require('../../assets/usermanual.png')}
                 />
             })
         },

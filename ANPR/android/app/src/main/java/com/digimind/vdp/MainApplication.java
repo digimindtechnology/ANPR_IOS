@@ -3,6 +3,7 @@ package com.digimind.vdp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rumax.reactnative.pdfviewer.PDFViewPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import io.invertase.firebase.RNFirebasePackage;
 import com.airbnb.android.react.maps.MapsPackage;
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new PDFViewPackage(),
             new RNDeviceInfo(),
             new RNFirebasePackage(),
             new MapsPackage(),
