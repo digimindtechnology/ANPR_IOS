@@ -33,6 +33,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-simple-toast';
 import UserManual from './UserManual';
+import LargePhotoView from './LargePhotoView';
 
 const HomeTab = TabNavigator(
     {
@@ -85,11 +86,45 @@ const HomeTab = TabNavigator(
         
       }
 );
+const VehicleNotMatchedStack = StackNavigator(
+    {
+        VehicleNotMatched: {
+            screen: VehicleNotMatched,
+            navigationOptions: ({ navigation }) => ({
+                header: null,
+               
+            })
+        },
+        // LargePhotoView:{
+        //     screen:LargePhotoView,
+        //     navigationOptions:({navigation})=>({
+        //         header:null,
+        //     })
+        // }      
+    }
+)
+const ImpossibleSpaceStack = StackNavigator(
+    {
+        ImpossibleSpace: {
+            screen: ImpossibleSpace,
+            navigationOptions: ({ navigation }) => ({
+                header: null,
+               
+            })
+        },
+        // LargePhotoView:{
+        //     screen:LargePhotoView,
+        //     navigationOptions:({navigation})=>({
+        //         header:null,
+        //     })
+        // }            
+    }
+)
 
 const SuspectedVehicleTab = TabNavigator(
     {
         VehicleNotMatched: {
-            screen: VehicleNotMatched,
+            screen: VehicleNotMatchedStack,
             navigationOptions: ({ navigation }) => ({
                 header: null,
                 tabBarLabel: 'Not Found In MPTransport',
@@ -97,7 +132,7 @@ const SuspectedVehicleTab = TabNavigator(
             })
         },
         ImpossibleSpace: {
-            screen: ImpossibleSpace,
+            screen: ImpossibleSpaceStack,
             navigationOptions: ({ navigation }) => ({
                 header: null,
                 tabBarLabel: 'Impossible Space Time',
@@ -193,6 +228,28 @@ const HomeDrawer = DrawerNavigator(
                 />
             })
         },
+        // VehicleNotMatched: {
+        //     screen: VehicleNotMatched,
+        //     navigationOptions: ({ navigation }) =>({
+        //         drawerLabel: 'Vehicle Not Matched',
+        //         //drawerIcon: ({ tintColor }) => <SimpleLineIcons name="question" color={tintColor} size={20} />,
+        //         drawerIcon: <Image 
+        //         style={{width: 22, height: 22}}
+        //         source={require('../../assets/data_base.png')}
+        //         />
+        //     })
+        // },
+        // ImpossibleSpace: {
+        //     screen: ImpossibleSpace,
+        //     navigationOptions: ({ navigation }) =>({
+        //         drawerLabel: 'Impossible Space',
+        //         //drawerIcon: ({ tintColor }) => <SimpleLineIcons name="question" color={tintColor} size={20} />,
+        //         drawerIcon: <Image 
+        //         style={{width: 22, height: 22}}
+        //         source={require('../../assets/time.png')}
+        //         />
+        //     })
+        // },
         FeedbackStack: {
             screen: FeedbackStack,
             navigationOptions: ({ navigation }) => ({

@@ -33,7 +33,7 @@ var Api = null;
 
 export default class OwnershipSearch extends Component {
 
-  _didFocusSubscription;
+ // _didFocusSubscription;
   _willBlurSubscription;
 
   
@@ -76,6 +76,7 @@ export default class OwnershipSearch extends Component {
       modalMaker:false,
       modalModel:false,
       //focused:false
+      page:0,
       
     }
     this.reload = this.reload.bind(this);
@@ -237,6 +238,8 @@ export default class OwnershipSearch extends Component {
       colors:'',
       engine_no:this.state.engine_no,
       chassis_no:this.state.chassis_no,
+      page_index:this.state.page,
+      page_size:100
       }
    
     
@@ -376,7 +379,8 @@ reload = () => {
     this.setState({maker_classification_name:''});    
     this.setState({engine_no:''});   
     this.setState({chassis_no:''});    
-    this.setState({owner_Ship_Search_Records:[]});    
+    this.setState({owner_Ship_Search_Records:[]});
+    this.setState({page:0});    
   }
   render() {
     const {userInfo} = this.state;

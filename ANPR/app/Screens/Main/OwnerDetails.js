@@ -168,12 +168,18 @@ export default class OwnerDetails extends Component {
       console.log('MpTransPortData',res);
       this.showProgress(false); 
     if (res) {
-      this.setState({items:res.Object});
-      console.log('items',this.state.items);
-      this.showProgress(false);
+       if(res.MessageType==0){
+           this.setState({items:res.Object});
+           console.log('items',this.state.items);
+           this.showProgress(false);
+           Toast.show(res.Message);
+       }else{
+        Toast.show(res.Message);
+       }
     }else{
       this.showProgress(false);
      Toast.show('We\'re facing some technical issues!');
+
     }
   }).catch(err =>{
        this.showProgress(false);

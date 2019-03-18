@@ -23,6 +23,7 @@ import moment from 'moment-timezone';
 import commonStyle from '../../styles';
 import colors from '../../colors';
 import PhotoView from 'react-native-photo-view';
+import ImageModal1 from '../../Components/ImageViewModal';
 
 var Api = null;
 
@@ -62,8 +63,9 @@ export default class ImpossibleSpace extends Component {
       is_map_show: false,
       image_url:'',
       page:0,
+      vehicle_number:''
     }
-    this.reload = this.reload.bind(this);
+     this.reload = this.reload.bind(this);
     this._didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
       payload => {
@@ -72,6 +74,9 @@ export default class ImpossibleSpace extends Component {
         // if(userInfo){
         //   this.getProjectInfo(userInfo);
         // }
+
+        //this._getUserDetails();
+
       }
     );
   }
@@ -86,11 +91,12 @@ export default class ImpossibleSpace extends Component {
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+    
   }
 
   componentWillUnmount() {
     NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-    // _didFocusSubscription && _didFocusSubscription.remove();
+   // _didFocusSubscription && _didFocusSubscription.remove();
   }
 
 
@@ -99,7 +105,7 @@ export default class ImpossibleSpace extends Component {
     console.log("nodeinfo", NodeInfo.NodeURL);
 
     Api = new API(NodeInfo.NodeURL);
-    this._getUserDetails();
+     this._getUserDetails();
 
     NetInfo.getConnectionInfo().then((connectionInfo) => {
       console.log('connection', connectionInfo);
@@ -140,7 +146,8 @@ export default class ImpossibleSpace extends Component {
       this.setState({userInfo: dt});
       console.log('dt',dt);
       this.getSuspectedVehicleImposibleSpace();
-      
+      console.log('Start_date:',this.state.start_date);
+      console.log('End_Date:',this.state.end_date);
     }).catch(err=>console.log('error occurred in user detail',err));
   }
 
@@ -152,16 +159,16 @@ export default class ImpossibleSpace extends Component {
     const data = {
       user_id:this.state.userInfo.UserID,
       company_id:this.state.userInfo.CompanyID,
-      //start_date:this.state.start_date,
-      //end_date:this.state.end_date,
+      start_time:this.state.start_date,
+      end_time:this.state.end_date,
       //registration_number:this.state.registration_number,
       page_index:this.state.page,
-      page_size:5,
+      page_size:10,
       AuthKey:"MPP0L1CERHQ",
      
     }
     
-
+    console.log('SuspectedVehicleImposibleSpace Data:',data);
     this.showProgress(true);
     Api.SuspectedVehicleImposibleSpace(data).then(res => {
        
@@ -174,7 +181,7 @@ export default class ImpossibleSpace extends Component {
       } else {
         //this.setState({vehicle_list:res.Object});
         this.setState({vehicle_list:[...this.state.vehicle_list,...res.Object]});
-       
+        Toast.show(res.Message);
       }
     }else{
      Toast.show('We\'re facing some technical issues!');
@@ -200,7 +207,7 @@ reload = () => {
  // renderList(vehicle_list) {
   renderList({item}) {
    // return vehicle_list.map((item,key) => {
-    return (<View style={{ marginBottom: 10 }} >
+    return (<View style={{ marginBottom: 10 }}>
       <Card containerStyle={{ margin: 0, padding: 0, marginTop: 5, borderRadius: 10, backgroundColor: '#ffffff' }}>
 
         <View style={{ flexDirection: 'row' }}>
@@ -215,11 +222,13 @@ reload = () => {
             <Avatar
               size="medium"
               rounded
+              icon={{name: 'camera-off', type: 'feather'}}
               containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
               imageProps={{style:{borderRadius:50}}}
               source={{ uri: item.image_name }}
-              onPress={() => this.setState({ modalVisible: true},()=>this.setImageUrl(item.image_name))}
-              activeOpacity={0.7}
+              onPress={() =>{this.setState({ modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
+              //onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
+              activeOpacity={0.2}
             />
 
           </View>
@@ -243,13 +252,115 @@ reload = () => {
     const {userInfo} = this.state;
     return (
       <View style={{ flex: 1 }}>
-        <CustomHeader height={1} 
-        leftComponent={<Entypo name='menu' color="#fff" style={{paddingLe:10}} size={25} onPress={()=>this.props.navigation.toggleDrawer()} />} 
+        <CustomHeader height={90} 
+        leftComponent={<Entypo name='menu' color="#fff" style={{paddingLeft:10}} size={25} onPress={()=>this.props.navigation.toggleDrawer()} />} 
         title={userInfo.FullName?userInfo.FullName:'Vehicle List'} 
         // RightComponent={
         //   <Feather name="more-vertical" style={{ padding: 10 }} color="#fff" size={18} onPress={() => this.logout()} />
         // } logout={() => this.logout()} 
         />
+
+      <View style={{ width: '100%', margin: 0, marginTop: -90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>         
+          <Card containerStyle={{ margin: 0, borderRadius: 8, padding:5 }} >        
+            <View style={{ flexDirection: 'column', alignItems: 'center' }} animationType="slide">
+              <View style={{ width: '100%', flexDirection: 'row' }}>
+              <Text style={styles.highlight_label}>From</Text>
+                <DatePicker
+                  style={{flex:1,  padding:0,height:20}}
+                  date={this.state.start_date}
+                  mode="date"
+                  placeholder="select date"
+                  showIcon={true}
+                  format="DD-MMM-YYYY"
+                  minDate="01-Jan-2010"
+                  maxDate="31-Dec-2030"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateTouchBody:{
+                      flex:0,
+                      justifyContent:'flex-end',
+                      padding:0,
+                      margin:0,
+                      height:20,
+                    },
+                    dateInput: {
+                      flex:0,
+                      padding:0,
+                      margin:0,
+                      height:20,
+                      borderColor: "#d0cece00"
+                    },
+                    dateText: {
+                      fontSize:16,
+                      color:colors.statusColor
+                    },
+                    dateIcon: {
+                      width: 22,
+                      height: 22
+                    }
+                  }}
+                  onDateChange={(date) => { this.setState({ start_date: date }) }}
+                />
+              </View>
+
+              <View style={{ marginTop: 5, width: '100%', flexDirection: 'row' }}>
+              <Text style={styles.highlight_label}>To</Text>
+                <DatePicker
+                  style={{flex:1,padding:0,height:20}}
+                  date={this.state.end_date}
+                  mode="date"
+                  placeholder="select date"
+                  showIcon={true}
+                  format="DD-MMM-YYYY"
+                  minDate="01-Jan-2010"
+                  maxDate="31-Dec-2030"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateTouchBody:{
+                      flex:0,
+                      justifyContent:'flex-end',
+                      padding:0,
+                      margin:0,
+                      height:20,
+                    },
+                    dateInput: {
+                      flex:0,
+                      padding:0,
+                      margin:0,
+                      height:20,
+                      borderColor: "#d0cece00"
+                    },
+                    dateText: {
+                      fontSize:16,
+                      color:colors.statusColor
+                    },
+                    dateIcon: {
+                      width: 22,
+                      height: 22
+                    }
+                  }}
+                  onDateChange={(date) => { this.setState({ end_date: date }) }}
+                />
+              </View>
+            </View>
+            <View style={{ width: '100%', paddingRight:10,marginTop:20, flexDirection:'row', justifyContent:'center' }}>
+                <TouchableOpacity onPress={()=>this.setState({page:0,vehicle_list:[]},()=>this.getSuspectedVehicleImposibleSpace())}>
+                  <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <FontAwesome name="search" size={20} color="#fff" />
+                       <Text style={{ color: '#fff', marginLeft: 10 }}>Search</Text>
+                   </View>
+                  </Card>
+                </TouchableOpacity>
+              </View>
+          </Card>
+        </View>
+
+
+
+
         <View style={{ flex:1 }}>
           {/* <ScrollView style={{ flex: 1 }}
             contentContainerStyle={{padding:10}}
@@ -267,6 +378,7 @@ reload = () => {
            data={this.state.vehicle_list}
            renderItem={this.renderList.bind(this)}
            onEndReached={this.handleLoadMore}
+           keyExtractor={(item, index) => index.toString()}  
            />
             :           
               <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -288,8 +400,18 @@ reload = () => {
 
           </ScrollView> */}
         </View>
-       
-        {/* model for larg  Image View with close options */}
+
+        {/* <ImageModal1
+         visible={this.state.modalVisible}
+         onRequestClose={() => {
+          this.setState({ modalVisible: false})
+         }}
+         source={{uri:this.state.image_url}}
+         onPress={() => this.setState({ modalVisible: false })}
+         Text={this.state.vehicle_number}
+         /> */}
+
+          {/* model for larg  Image View with close options */}
         <Modal
           animationType="fade"
           transparent={true}
@@ -297,79 +419,45 @@ reload = () => {
           onRequestClose={() => {
             this.setState({ modalVisible: false })
           }}>
-          {/* backgroundColor: '#00000040' */}
+       
           <View style={{ flex: 1, backgroundColor: '#ffffff'}}>  
          
              <View style={{ height:'25%' }}>
-               <TouchableOpacity style={{ flex: 1}} 
-               //onPress={() => { this.setState({ modalVisible: false }); console.log('onTouch', 'Touched') }}
+               <TouchableOpacity style={{ flex: 1}}               
                />
              </View>
-           <View style={{ flex:1,marginLeft:10,marginRight:10, backgroundColor: 'white' }}>
-  {/* <View style={{ flex: 1, flexDirection: "row" }}> */}
-            <View style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}>
-           
-              {/* <Image
-               style={{flex:1}}
-               source={{uri: this.state.image_url}}
-              /> */}
-              <PhotoView
-                
-                source={{uri: this.state.image_url}}
-                //minimumZoomScale={0.5}
+           <View style={{ flex:1,marginLeft:10,marginRight:10, backgroundColor: 'white' }}> 
+            <View style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}>           
+              <PhotoView                
+                source={{uri: this.state.image_url}}               
                 maximumZoomScale={6}
                 androidScaleType="fitXY"
-                onError={() =>{ <ActivityIndicator color='red' size='large' /> }}
+                //onLoad={() => console.log("Image loaded!")}
                 style={{width:'100%', height: '100%'}} />
-                
-
-              
-           
-              {/* <TouchableOpacity activeOpacity={1}  
-                            style={{
-                            width:30,
-                            height:30, 
-                            position: 'relative',
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0}}
-                            onPress={() => this.setState({ modalVisible: false })}>
-              <MaterialCommunityIcons name='close'
-                                      color='red' 
-                                      size={30}/>
-            </TouchableOpacity> */}
-     
-           </View>
-  {/* </View> */}
-  
-
+           </View> 
          </View>
         <View style={{ height:'25%'}}>
-            <TouchableOpacity style={{ flex: 1}} 
-            //onPress={() => { this.setState({ modalVisible: false }); console.log('onTouch', 'Touched') }}
+            <TouchableOpacity style={{ flex: 1}}          
             />
         </View>
-      </View>
-      <TouchableOpacity activeOpacity={.3}  
-                            style={{
-                            width:30,
-                            height:30, 
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0}}
-                            onPress={() => this.setState({ modalVisible: false })}>
-              <MaterialCommunityIcons name='close'
-                                      color='red' 
-                                      size={30}/>
-            </TouchableOpacity>
+      </View>     
+              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+
+               <TouchableOpacity activeOpacity={.3}
+                style={{
+                        width: 30,
+                        height: 30
+                      }}
+                onPress={() => this.setState({ modalVisible: false })}>
+                 <MaterialCommunityIcons name='close'
+                                         color='red'
+                                         size={30} />
+               </TouchableOpacity>
+              <Text style={{ textAlign:'center', flex:1, fontSize: 20 }}>{this.state.vehicle_number}</Text>
+              </View>
         </Modal>
        
         {/* model for larg  Image View with close options  */}
-
-
 
 
         {this.state.isLoading?
@@ -378,6 +466,8 @@ reload = () => {
                               <ActivityIndicator color='white' size='large' />
                               <Text style={commonStyle.loading_text}>{this.state.loading_message}</Text>
                           </View> : null}
+
+
 
       </View >
     );

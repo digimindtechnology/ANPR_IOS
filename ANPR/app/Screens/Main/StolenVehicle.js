@@ -192,6 +192,7 @@ export default class StolenVehicle extends Component {
 
             if (res.Object.length == 0) {
               this.setState({ endOfList: true });
+              Toast.show('No data available')
             }
 
           }

@@ -22,7 +22,7 @@ import moment from 'moment-timezone';
 import commonStyle from '../../styles';
 import colors from '../../colors';
 import PhotoView from 'react-native-photo-view';
-
+//import ImageModal from '../../Components/ImageViewModal';
 var Api = null;
 
 // const headerComponents = {
@@ -65,9 +65,11 @@ export default class VehicleNotMatched extends Component {
       police_station_id: '',
       image_url:'',
       page:0,
-      ckeck_Variable:0
+      ckeck_Variable:0,
+      vehicle_number:'',
+      
     }
-    this.reload = this.reload.bind(this);
+     this.reload = this.reload.bind(this);
     this._didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
       payload => {
@@ -76,6 +78,7 @@ export default class VehicleNotMatched extends Component {
         // if(userInfo){
         //   this.getProjectInfo(userInfo);
         // }
+        //this._getUserDetails();
       }
     );
   }
@@ -94,7 +97,7 @@ export default class VehicleNotMatched extends Component {
 
   componentWillUnmount() {
     NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
-    // _didFocusSubscription && _didFocusSubscription.remove();
+     //_didFocusSubscription && _didFocusSubscription.remove();
   }
 
 
@@ -211,8 +214,7 @@ export default class VehicleNotMatched extends Component {
       police_station_id:police_station_id,
       user_id:this.state.userInfo.UserID,
       company_id:this.state.userInfo.CompanyID,
-      page_index:this.state.page,
-      
+      page_index:this.state.page,      
       page_size:10,
       AuthKey:"MPP0L1CERHQ"
     }
@@ -230,6 +232,9 @@ export default class VehicleNotMatched extends Component {
         Toast.show('We\'re facing some technical issues!');
       } else {
         this.setState({vehicle_list:[...this.state.vehicle_list,...res.Object]});
+       
+          Toast.show(res.Message);
+     
       }
     }else{
      Toast.show('We\'re facing some technical issues!');
@@ -252,9 +257,9 @@ reload = () => {
   this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id);
 }
 
-  renderList({item}) {
+  renderList({item,key}) {
     // return vehicle_list.map((item,key) => {
-    return <View style={{ marginBottom: 10 }} >
+  return <View style={{ marginBottom: 10 }} key={key}> 
       <Card containerStyle={{ margin: 0, padding: 0, marginTop: 5, borderRadius: 10, backgroundColor: '#ffffff' }}>
 
         <View style={{ flexDirection: 'row' }}>
@@ -265,26 +270,24 @@ reload = () => {
         </View>
         <View style={{ flexDirection: 'row', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, padding: 10 }}>
           <View style={{ flexDirection: 'row', }}>
-
             <Avatar
               size="medium"
               rounded
+              icon={{name: 'camera-off', type: 'feather'}}
               containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
               imageProps={{style:{borderRadius:50}}}
-              containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
-              imageProps={{style:{borderRadius:50}}}
-              source={{ uri: item.image_name }}
-              onPress={() => {this.setState({ image_url: item.image_name, modalVisible: true})}}
+              source={{uri:item.image_name}}
+             // onPress={() => {this.setState({modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
+             onPress={() => {this.setState({image_url:item.image_name,vehicle_number:item.LicenseNum,modalVisible: true},()=>console.log('Url:',this.state.image_url))}}
+             // onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
               activeOpacity={0.2}
             />
-
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text style={styles.text}>{item.location_name} {item.city_name}</Text>
             <Text style={styles.text_label}>Police Station : <Text style={styles.text}>{item.police_station_name}</Text></Text>
             <Text style={styles.text}>{item.Time}</Text>
           </View>
-
         </View>
       </Card>
     </View>
@@ -292,9 +295,8 @@ reload = () => {
     // })
   }
   setImageUrl=(url)=>{
-    
-    this.setState({image_url:url})
-    console.log('URL:',url)
+    this.setState({image_url:url});
+    console.log('URL:',this.state.image_url);
   }
   render() {
     const {userInfo} = this.state;
@@ -412,11 +414,12 @@ reload = () => {
                             }else{
                                 this.setState({ district_id: null });
                                 this.setState({police_station_list: []});
+                                
                             }
                         }}>
                         <Picker.Item label="Please select district" value={null} />
                         {this.state.district_list.map((item, key) => (
-                            <Picker.Item label={item.Text} value={item.Value} />)
+                            <Picker.Item label={item.Text} value={item.Value} key={key}/>)
                         )}
                     </Picker>
                     <Picker
@@ -429,6 +432,7 @@ reload = () => {
                                 // this.getSuspectedVehicleNotMatchedList(this.state.district_id,itemValue)
                             }else{
                                 this.setState({ vehicle_list: [] })
+                                this.setState({ police_station_id: null });
                             }
                             
                         }}>
@@ -509,6 +513,7 @@ reload = () => {
             data={this.state.vehicle_list}
             renderItem={this.renderList.bind(this)}
             onEndReached={this.handleLoadMore}
+            keyExtractor={(item, index) => index.toString()}    
             />
             :
               <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -529,83 +534,67 @@ reload = () => {
 
           </ScrollView> */}
         </View>
-       
-        {/* model for larg  Image View with close options */}
+        {/* <ImageModal
+         visible={this.state.modalVisible1}
+         onRequestClose={() => {
+          this.setState({ modalVisible1: false})
+         }}
+         source={{uri:this.state.image_url}}
+         onPress={() => this.setState({ modalVisible1: false })}
+         Text={this.state.vehicle_number}
+         /> */}
+
+         {/* model for larg  Image View with close options */}
         <Modal
           animationType="fade"
           transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            this.setState({ modalVisible: false,image_url:'' })
+            this.setState({ modalVisible: false })
           }}>
-          {/* backgroundColor: '#00000040' */}
+       
           <View style={{ flex: 1, backgroundColor: '#ffffff'}}>  
          
              <View style={{ height:'25%' }}>
-               <TouchableOpacity style={{ flex: 1}} 
-               //onPress={() => { this.setState({ modalVisible: false }); console.log('onTouch', 'Touched') }}
+               <TouchableOpacity style={{ flex: 1}}               
                />
              </View>
-           <View style={{ flex:1,marginLeft:10,marginRight:10, backgroundColor: 'white' }}>
-  {/* <View style={{ flex: 1, flexDirection: "row" }}> */}
-            <View style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}>
-           
-              {/* <Image
-               style={{flex:1}}
-               source={{uri: this.state.image_url}}
-              /> */}
-                <PhotoView
-                source={{uri: this.state.image_url}}
-                //minimumZoomScale={0.5}
+           <View style={{ flex:1,marginLeft:10,marginRight:10, backgroundColor: 'white' }}> 
+            <View style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}> 
+
+              <PhotoView                
+                source={{uri: this.state.image_url}}               
                 maximumZoomScale={6}
                 androidScaleType="fitXY"
-                onError={() =>{ <ActivityIndicator color='red' size='large' /> }}
-                style={{width:'100%', height: '100%'}} />
-              
-                
-              {/* <TouchableOpacity activeOpacity={1}  
-                            style={{
-                            width:30,
-                            height:30, 
-                            position: 'relative',
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0}}
-                            onPress={() => this.setState({ modalVisible: false })}>
-              <MaterialCommunityIcons name='close'
-                                      color='red' 
-                                      size={30}/>
-            </TouchableOpacity> */}
-     
-           </View>
-  {/* </View> */}
-  
+               // onLoad={() => console.log("Image loaded!")}
+               //onLoadStart={()=>console.log('onLoadStart url:',this.state.image_url)}
+                style={{width:'100%', height:'100%'}} />
 
+           </View> 
          </View>
         <View style={{ height:'25%'}}>
-            <TouchableOpacity style={{ flex: 1}} 
-            //onPress={() => { this.setState({ modalVisible: false }); console.log('onTouch', 'Touched') }}
+            <TouchableOpacity style={{ flex: 1}}          
             />
         </View>
-      </View>
-      <TouchableOpacity activeOpacity={.3}  
-                            style={{
-                            width:30,
-                            height:30, 
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0}}
-                            onPress={() => this.setState({ modalVisible: false,image_url:'' })}>
-              <MaterialCommunityIcons name='close'
-                                      color='red' 
-                                      size={30}/>
-            </TouchableOpacity>
+      </View>     
+              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+
+               <TouchableOpacity activeOpacity={.3}
+                style={{
+                        width: 30,
+                        height: 30
+                      }}
+                onPress={() => this.setState({ modalVisible: false })}>
+                 <MaterialCommunityIcons name='close'
+                                         color='red'
+                                         size={30} />
+               </TouchableOpacity>
+              <Text style={{ textAlign:'center', flex:1, fontSize: 20 }}>{this.state.vehicle_number}</Text>
+              </View>
         </Modal>
        
         {/* model for larg  Image View with close options  */}
+       
 {/* 
            <View style={{ position: 'absolute', top: 225, alignSelf:'center',paddingTop:10}}>
               <TouchableOpacity style={{ elevation: 8 }} activeOpacity={0.2} onPress={() => this.setState({page:0,vehicle_list:[]},()=>this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id))}>
