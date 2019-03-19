@@ -521,11 +521,11 @@ reload = () => {
                   codeInputStyle={{ color:'#3589c5', }}
                   onFulfill={(code) => {
                     console.log(code,/[a-zA-Z]{2}/.test(code));
-                    if(/[a-zA-Z]{2}/.test(code)){
+                    if(code.length>0&&/[a-zA-Z]/.test(code)){
                       this.refs.num.clear()
                       this.setState({ref_code:code});
                     }else{
-                      this.refs.ref_code.clear()
+                      //this.refs.ref_code.clear()
                       this.setState({ref_code:''});
                     }
                   }}

@@ -244,18 +244,19 @@ export default class OwnershipSearch extends Component {
    
     
     console.log('OwnerShip data',data);
-
-    this.showProgress(true);
+    {this.state.owner_Ship_Search_Records.length==0?this.showProgress(true):this.showProgress(false)}  
+    
     Api.GetOwnerShipSearchRecords(data).then(res => {
        
       console.log('GetOwnerShipSearchRecords',res);
-         
+     
       this.showProgress(false);
     if (res) {
       if (res.MessageType != 0) {
         Toast.show('We\'re facing some technical issues!');
       } else {
-        this.setState({owner_Ship_Search_Records:res.Object});
+        this.setState({owner_Ship_Search_Records:[...this.state.owner_Ship_Search_Records,...res.Object]});
+        console.log('owner_Ship_Search_Records:',this.state.owner_Ship_Search_Records);
       }
     }else{
      Toast.show('We\'re facing some technical issues!');

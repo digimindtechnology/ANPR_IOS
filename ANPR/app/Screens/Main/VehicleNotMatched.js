@@ -164,7 +164,7 @@ export default class VehicleNotMatched extends Component {
      // this.showProgress(true);
       Api.GetDistrict(data).then(res => {
         console.log('GetDistrict',res);
-        this.showProgress(false);
+       // this.showProgress(false);
       if (res) {
         if (res.MessageType != 0) {
           Toast.show('We\'re facing some technical issues!');
