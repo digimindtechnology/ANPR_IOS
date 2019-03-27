@@ -23,7 +23,8 @@ import OwnerDetails from './OwnerDetails'
 import Feedback from './FeedbackList';
 import AddFeedback from './AddFeedback';
 import OwnershipSearch from './OwnershipSearch';
-import Assets from '../../assets/stolen_icon.png'
+import VehicleSearch from './VehicleSearch';
+import Assets from '../../assets/stolen_icon.png';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -274,6 +275,18 @@ const HomeDrawer = DrawerNavigator(
                 />
             })
         },
+        VehicleSearch:{
+            screen: VehicleSearch,
+            navigationOptions:({navigation})=>({
+                header:null,
+                drawerLabel: 'Vehicle Search',
+                drawerIcon: <Image
+                style={{width:26,height:26}}
+                source={require('../../assets/vehicleserch.png')}
+                />
+            })
+        },
+       
         Notification: {
             screen: Notification,
             navigationOptions: ({ navigation }) => ({

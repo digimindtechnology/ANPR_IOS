@@ -67,7 +67,7 @@ export default class StolenVehicle extends Component {
       is_map_show: false,
       image_url:'',
       alert_Message:'',
-      mobile_No:null,
+      mobile_No:'',
       page:0,
       showFooter: false,
       endOfList: false,
@@ -211,11 +211,15 @@ export default class StolenVehicle extends Component {
   }
 
   getSendPartialMessage = () => {
-
+    if(this.state.mobile_No.length==0){
+      Toast.show("Please enter mobile number !!!",Toast.SHORT);
+      return;
+    }
     if(this.state.mobile_No.length<10){
       Toast.show("Please enter valid number !!!",Toast.SHORT);
       return;
     }
+  
 
     const data = {
       user_id:this.state.userInfo.UserID,
