@@ -201,7 +201,7 @@ export default class LoginScreen extends Component {
     const data = {
       "loginId":loginid,
       "Pwd":password,
-      "TokenNumber":this.state.fcmToken,
+      "TokenNumber":this.state.token,
       "ImeiNumber":"",
       "OsVersion":"",
       "AuthKey":"MPP0L1CERHQ",
@@ -220,9 +220,14 @@ export default class LoginScreen extends Component {
            this.setState({ isLoading: false })
          } else {
          // this._signInAsync(res.Object);
-         this.setState({userDetail:res.Object,modelOTPAuth:true});
-         console.log('userDetail',this.state.userDetail);
-         setTimeout(()=>this.setState({resendButton:false}),30000);
+         if(res.Object.is_otp_required==false){
+             this._signInAsync(res.Object);
+         }else{
+          this.setState({userDetail:res.Object,modelOTPAuth:true});
+          console.log('userDetail',this.state.userDetail);
+          setTimeout(()=>this.setState({resendButton:false}),30000);
+         }
+         
          }
        }else{
         Toast.show('Login error..!!!');
