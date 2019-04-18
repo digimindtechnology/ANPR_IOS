@@ -5,7 +5,23 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text, ScrollView, FlatList, Picker, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {
+  StyleSheet, 
+  View,
+  Text, 
+  ScrollView, 
+  FlatList, 
+  Picker, 
+  TextInput, 
+  Keyboard, 
+  Image, 
+  AsyncStorage,
+  NetInfo, 
+  ActivityIndicator,
+  Modal, 
+  TouchableOpacity,
+  RefreshControl,
+  Platform} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -22,6 +38,7 @@ import moment from 'moment-timezone';
 import commonStyle from '../../styles';
 import colors from '../../colors';
 import PhotoView from 'react-native-photo-view';
+import RNPickerSelect from 'react-native-picker-select'
 //import ImageModal from '../../Components/ImageViewModal';
 var Api = null;
 
@@ -67,6 +84,8 @@ export default class VehicleNotMatched extends Component {
       page:0,
       ckeck_Variable:0,
       vehicle_number:'',
+      formated_district_list: [],
+      formated_police_station_list: [],
       
     }
      this.reload = this.reload.bind(this);
@@ -170,6 +189,9 @@ export default class VehicleNotMatched extends Component {
           Toast.show('We\'re facing some technical issues!');
         } else {
           this.setState({district_list:res.Object});
+          if(Platform.OS=='ios'){
+            this.getFormatedDistrict(res.Object);
+          }
         }
       }else{
        Toast.show('We\'re facing some technical issues!');
@@ -195,6 +217,9 @@ export default class VehicleNotMatched extends Component {
           Toast.show('We\'re facing some technical issues!');
         } else {
           this.setState({police_station_list:res.Object});
+          if(Platform.OS=='ios'){
+            this.getFormatedPoliceStation(res.Object);
+          }
         }
       }else{
        Toast.show('We\'re facing some technical issues!');
@@ -297,6 +322,26 @@ reload = () => {
   setImageUrl=(url)=>{
     this.setState({image_url:url});
     console.log('URL:',this.state.image_url);
+  }
+  getFormatedDistrict(items){
+    var format_item=[];
+    items.map((item)=>{
+      format_item.push({
+      label:item.Text,
+      value:item.Value,
+      });
+    })
+    this.setState({formated_district_list:format_item});
+  }
+  getFormatedPoliceStation(items){
+    var format_item=[];
+    items.map((item)=>{
+      format_item.push({
+      label:item.Text,
+      value:item.Value,
+      });
+    })
+    this.setState({formated_police_station_list:format_item});
   }
   render() {
     const {userInfo} = this.state;
@@ -403,6 +448,25 @@ reload = () => {
               </View>
 
               <View style={{ flexDirection: 'column', width: '100%', marginTop: 10, backgroundColor: '#fafafa', borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
+                    {Platform.OS=='ios'?
+                      <RNPickerSelect
+                        placeholder={{
+                          label:'Please select district',
+                          value:null,
+                        }}
+                        items={this.state.formated_district_list}
+                        style={{...pickerSelectStyles}}
+                        onValueChange={(itemValue)=>{
+                          if(itemValue){
+                            this.setState({district_id:itemValue})
+                            this.getPoliceStationByCity(itemValue);
+                          }else{
+                            this.setState({district_id:null,formated_police_station_list:[],police_station_list:[]})
+                          }
+                        }}
+                        value={this.state.district_id}
+                      />
+                    :  
                     <Picker
                         mode='dropdown'
                         selectedValue={this.state.district_id}
@@ -422,6 +486,26 @@ reload = () => {
                             <Picker.Item label={item.Text} value={item.Value} key={key}/>)
                         )}
                     </Picker>
+                    }
+
+                    {Platform.OS=='ios'?
+                      <RNPickerSelect
+                        placeholder={{
+                          label:'Please select Police Station',
+                          value:null,
+                        }}
+                        items={this.state.formated_police_station_list}
+                        style={{...pickerSelectStyles}}
+                        onValueChange={(itemValue,itemIndex)=>{
+                          if(itemIndex>0){
+                            this.setState({police_station_id:itemValue});                            
+                          }else{
+                            this.setState({police_station_id:'',vehicle_list:[]})
+                          }
+                        }}
+                        value={this.state.police_station_id}
+                      />
+                    :  
                     <Picker
                         mode='dropdown'
                         selectedValue={this.state.police_station_id}
@@ -441,6 +525,7 @@ reload = () => {
                             <Picker.Item label={item.Text} value={item.Value} />)
                         )}
                     </Picker>
+                    }
                     {/* <View style={{ width: '100%', paddingRight: 10, flexDirection: 'row', justifyContent: 'flex-end' }}>
                         <TouchableOpacity onPress={() => this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id)}>
                             <Card containerStyle={{ margin: 0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>

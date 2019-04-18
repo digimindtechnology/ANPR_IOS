@@ -24,6 +24,7 @@
     "react-native-maps": "^0.22.1",
     "react-native-multiple-select": "^0.4.4",
     "react-native-photo-view": "^1.5.2",
+    "react-native-picker-select": "^6.1.0",
     "react-native-progress": "^3.5.0",
     "react-native-read-more-text": "^1.1.0",
     "react-native-rest-client": "^0.1.1",
