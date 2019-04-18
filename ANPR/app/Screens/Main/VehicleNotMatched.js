@@ -776,3 +776,12 @@ const styles = StyleSheet.create({
    fontSize:18
  }
 });
+const pickerSelectStyles=StyleSheet.create({
+  inputIOS:{
+    fontSize:16,
+    paddingTop:13,
+    paddingHorizontal:10,
+    paddingBottom:12,
+    color:'black',
+  }
+})
