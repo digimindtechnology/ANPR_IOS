@@ -5,7 +5,24 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text, ScrollView, FlatList, Picker, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {
+  StyleSheet, 
+  View,
+  Text, 
+  ScrollView, 
+  FlatList, 
+  Picker, 
+  TextInput, 
+  Keyboard, 
+  Image, 
+  AsyncStorage,
+  NetInfo, 
+  ActivityIndicator, 
+  Modal, 
+  TouchableOpacity, 
+  RefreshControl,
+  Platform
+} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -62,6 +79,8 @@ export default class VehicleSearch extends Component {
       vehicle_list: [],
      subCityList: [],
       locationList: [],
+      formated_subCityList: [],
+      formated_locationList: [],
       is_map_show: false,
       city_id: '',
       location_id: '',
@@ -174,6 +193,9 @@ export default class VehicleSearch extends Component {
           Toast.show('We\'re facing some technical issues!');
         } else {
           this.setState({subCityList:res.Object});
+          if(Platform.OS=='ios'){
+            this.setState({formated_subCityList:res.Object})
+          }
         }
       }else{
        Toast.show('We\'re facing some technical issues!');
@@ -199,6 +221,9 @@ export default class VehicleSearch extends Component {
           Toast.show('We\'re facing some technical issues!');
         } else {
           this.setState({locationList:res.Object});
+          if(Platform.OS=='ios'){
+            this.setState({formated_locationList:res.Object})
+          }
         }
       }else{
        Toast.show('We\'re facing some technical issues!');
@@ -271,6 +296,8 @@ reload = () => {
   this.VehicleHistoryByCity(this.state.city_id,this.state.location_id);
 }
 
+
+
   renderList({item,key}) {
     // return vehicle_list.map((item,key) => {
   return <View style={{ marginBottom: 10 }} key={key}> 
@@ -328,6 +355,28 @@ reload = () => {
     end_date: moment(new Date()).format("DD-MMM-YYYY HH:mm")});
     
   }
+
+  getFormatedCity(items){
+    var format_item=[];
+    items.map((item)=>{
+      format_item.push({
+      label:item.Text,
+      value:item.Value,
+      });
+    })
+    this.setState({formated_subCityList:format_item});
+  }
+  getFormatedLocation(items){
+    var format_item=[];
+    items.map((item)=>{
+      format_item.push({
+      label:item.Text,
+      value:item.Value,
+      });
+    })
+    this.setState({formated_locationList:format_item});
+  }
+
   render() {
     const {userInfo} = this.state;
     return (
@@ -433,6 +482,27 @@ reload = () => {
               </View>
 
               <View style={{ flexDirection: 'column', width: '100%', marginTop: 10, backgroundColor: '#fafafa', borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
+                    
+              {Platform.OS=='ios'?
+                      <RNPickerSelect
+                        placeholder={{
+                          label:'Please select city',
+                          value:null,
+                        }}
+                        items={this.state.formated_subCityList}
+                        style={{...pickerSelectStyles}}
+                        onValueChange={(itemValue)=>{
+                          if(itemValue){
+                            this.setState({city_id:itemValue})
+                            this.getGetLocationList(itemValue);
+                          }else{
+                            this.setState({ city_id: null });
+                            this.setState({locationList: []});                            
+                        }
+                        }}
+                        value={this.state.city_id}
+                      />
+                    :                      
                     <Picker
                         mode='dropdown'
                         selectedValue={this.state.city_id}
@@ -452,6 +522,26 @@ reload = () => {
                             <Picker.Item label={item.Text} value={item.Value} key={key}/>)
                         )}
                     </Picker>
+              }
+               {Platform.OS=='ios'?
+                      <RNPickerSelect
+                        placeholder={{
+                          label:'Please select location',
+                          value:null,
+                        }}
+                        items={this.state.formated_locationList}
+                        style={{...pickerSelectStyles}}
+                        onValueChange={(itemValue,itemIndex)=>{
+                          if(itemIndex>0){
+                            this.setState({ location_id: itemValue })
+                          }else{
+                            this.setState({ vehicle_list: [] })
+                            this.setState({ location_id: null });
+                          }
+                        }}
+                        value={this.state.location_id}
+                      />
+                    :  
                     <Picker
                         mode='dropdown'
                         selectedValue={this.state.location_id}
@@ -471,6 +561,7 @@ reload = () => {
                             <Picker.Item label={item.Text} value={item.Value} key={key}/>)
                         )}
                     </Picker>
+               }
                     {/* <View style={{ width: '100%', paddingRight: 10, flexDirection: 'row', justifyContent: 'flex-end' }}>
                         <TouchableOpacity onPress={() => this.VehicleHistoryByCity(this.state.city_id,this.state.location_id)}>
                             <Card containerStyle={{ margin: 0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
@@ -880,3 +971,12 @@ const styles = StyleSheet.create({
    fontSize:18
  }
 });
+const pickerSelectStyles=StyleSheet.create({
+  inputIOS:{
+    fontSize:16,
+    paddingTop:13,
+    paddingHorizontal:10,
+    paddingBottom:12,
+    color:'black',
+  }
+})
