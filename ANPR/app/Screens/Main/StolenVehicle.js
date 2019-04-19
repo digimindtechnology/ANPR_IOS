@@ -545,14 +545,14 @@ reload = () => {
             this.setState({ modalVisible: false })
           }}>
           {/* backgroundColor: '#00000040' */}
-          <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+          <View style={{ flex: 1, backgroundColor: '#ffffff'}}>
 
             <View style={{ height: '25%' }}>
               <TouchableOpacity style={{ flex: 1 }}
               //onPress={() => { this.setState({ modalVisible: false }); console.log('onTouch', 'Touched') }}
               />
             </View>
-            <View style={{ flex: 1, marginLeft: 10, marginRight: 10, backgroundColor: 'white' }}>
+            <View style={{ flex: 1, marginLeft: 10, marginRight: 10, backgroundColor: '#ffffff' }}>
               {/* <View style={{ flex: 1, flexDirection: "row" }}> */}
               <View style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}>
 
@@ -567,7 +567,7 @@ reload = () => {
                   maximumZoomScale={6}
                   androidScaleType="fitXY"
                   onLoad={() => console.log("Image loaded!")}
-                  style={{ width: '100%', height: '100%' }} />
+                  style={{ width: '100%', height: '100%'}} />
 
                 {/* <TouchableOpacity activeOpacity={1}  
                             style={{
@@ -595,7 +595,7 @@ reload = () => {
               />
             </View>
           </View>
-          <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+          <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center'}}>
 
             <TouchableOpacity activeOpacity={.3}
               style={{
