@@ -8,7 +8,8 @@ import {
     ScrollView,
     Image,
     DrawerLayoutAndroid,
-    View,TouchableOpacity,
+    View,
+    TouchableOpacity,  
 } from 'react-native';
 import VehicleHistoricalLocation from './VehicleHistoricalLocation';
 import MapView from './MapView';
@@ -172,9 +173,15 @@ const FeedbackStack = StackNavigator(
 const CustomDrawerContentComponent = (props) => (
     <ScrollView>
       <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
+      {Platform.OS=='ios'?
         <View style={{width:'100%',height:200}}>
-            <Image source={require('../../assets/logo_bd.png')} style={{width:'100%',height:200}} resizeMode='center' />
+            <Image source={require('../../assets/logo_bd.png')} style={{width:'100%',height:200}} resizeMode='contain' />
         </View>
+       :
+       <View style={{width:'100%',height:200}}>
+          <Image source={require('../../assets/logo_bd.png')} style={{width:'100%',height:200}} resizeMode='contain' />
+       </View> 
+      }
         <DrawerItems {...props} />
       </SafeAreaView>
     </ScrollView>
