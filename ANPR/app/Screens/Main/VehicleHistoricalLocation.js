@@ -42,6 +42,7 @@ import colors from '../../colors';
 import CodeInput from 'react-native-confirmation-code-input';
 import PhotoView from 'react-native-photo-view';
 import DeviceInfo from 'react-native-device-info';
+
 var Api = null;
 
 const headerComponents = {
@@ -340,9 +341,7 @@ reload = () => {
     const {userInfo} = this.state;
     return (
       <View style={{ flex: 1 }}>
-        {/* <StatusBar
-        backgroundColor="#772ea2" barStyle="light-content" height={20} translucent
-        /> */}
+      
         <CustomHeader height={90} 
         leftComponent={<Entypo name='menu' color={"#fff"} style={{padding:10}} size={25} onPress={()=>this.props.navigation.toggleDrawer()} />} 
         title={userInfo.FullName?userInfo.FullName:'Vehicle List'} 
