@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text, ScrollView,FlatList, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {StyleSheet, View,Text, ScrollView,FlatList, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl,Platform} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -218,18 +218,35 @@ reload = () => {
         </View>
         <View style={{ flexDirection: 'row', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, padding: 10 }}>
           <View style={{ flexDirection: 'row', }}>
-
+           {Platform.OS=='ios'? 
             <Avatar
               size="medium"
               rounded
               icon={{name: 'camera-off', type: 'feather'}}
-              containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
-              imageProps={{style:{borderRadius:50}}}
+              containerStyle={{
+                             borderColor:'#ccc',
+                             borderWidth:1,
+                            // padding:1
+                            }}
+             // imageProps={{style:{borderRadius:50}}}
               source={{ uri: item.image_name }}
               onPress={() =>{this.setState({ modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
               //onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
               activeOpacity={0.2}
             />
+            :
+            <Avatar
+            size="medium"
+            rounded
+            icon={{name: 'camera-off', type: 'feather'}}
+            containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
+            imageProps={{style:{borderRadius:50}}}
+            source={{ uri: item.image_name }}
+            onPress={() =>{this.setState({ modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
+            //onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
+            activeOpacity={0.2}
+          />
+         }
 
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
@@ -441,7 +458,7 @@ reload = () => {
             />
         </View>
       </View>     
-              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center',marginTop:(Platform.OS=='ios'?20:0)}}>
 
                <TouchableOpacity activeOpacity={.3}
                 style={{

@@ -294,16 +294,33 @@ reload = () => {
         </View>
         <View style={{ flexDirection: 'row', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, padding: 10, alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', }}>
-
+            {Platform.OS=='ios'?
             <Avatar
               size="medium"
               rounded
-              containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
-              imageProps={{style:{borderRadius:50}}}
+              icon={{name: 'camera-off', type: 'feather'}}
+              containerStyle={{
+                borderColor:'#ccc',
+                borderWidth:1, 
+               // padding:1
+              }}
+             // imageProps={{style:{borderRadius:50}}}
               source={{ uri: item.image_name }}
               onPress={() => this.setState({modaleVisiblePhoto:true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}
               activeOpacity={0.2}
             />
+            :
+            <Avatar
+            size="medium"
+            rounded
+            icon={{name: 'camera-off', type: 'feather'}}
+            containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
+            imageProps={{style:{borderRadius:50}}}
+            source={{ uri: item.image_name }}
+            onPress={() => this.setState({modaleVisiblePhoto:true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}
+            activeOpacity={0.2}
+          />
+          }
 
           </View>
           <View style={{ flex: 1, marginTop: 5, marginLeft: 10 }}>
@@ -781,7 +798,7 @@ reload = () => {
                                       color='red' 
                                       size={30}/>
             </TouchableOpacity> */}
-              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center',marginTop:(Platform.OS=='ios'?20:0)}}>
 
                <TouchableOpacity activeOpacity={.3}
                 style={{
