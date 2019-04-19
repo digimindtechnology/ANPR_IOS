@@ -22,6 +22,7 @@ import {StyleSheet,
   TouchableOpacity, 
   RefreshControl,
   Linking,
+  
 } from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
@@ -111,6 +112,7 @@ export default class Home extends Component {
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+   
   }
 
   componentWillUnmount() {
@@ -338,6 +340,9 @@ reload = () => {
     const {userInfo} = this.state;
     return (
       <View style={{ flex: 1 }}>
+        {/* <StatusBar
+        backgroundColor="#772ea2" barStyle="light-content" height={20} translucent
+        /> */}
         <CustomHeader height={90} 
         leftComponent={<Entypo name='menu' color={"#fff"} style={{padding:10}} size={25} onPress={()=>this.props.navigation.toggleDrawer()} />} 
         title={userInfo.FullName?userInfo.FullName:'Vehicle List'} 
@@ -346,7 +351,7 @@ reload = () => {
         // } logout={() => this.logout()} 
         />
 
-        <View style={{ width: '100%', margin: 0, marginTop: -90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>
+        <View style={{ width: '100%', margin: 0, marginTop:-90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>
           {/* <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <Text style={{ color: '#fff' }}>ANPR Log</Text>
           </View> */}

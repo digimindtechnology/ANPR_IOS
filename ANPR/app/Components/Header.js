@@ -19,7 +19,7 @@ export default class AppHeader extends Component{
                     // backgroundColor='#93e7ff'
                     backgroundColor='#1e3d7d'
                    // containerStyle={{ borderBottomWidth: 0 }}
-                    containerStyle={{ marginTop:0, paddingTop:0, borderBottomWidth: 0, height: (Platform.OS === 'ios' ? 44 : 70) }}
+                    containerStyle={{ marginTop:0, paddingTop:10, borderBottomWidth: 0, height: (Platform.OS === 'ios' ? 70 : 70) }}
                     leftComponent={this.props.leftComponent}
                     rightComponent={this.props.rightComponent}
                     centerComponent={this.props.title?{ text: this.props.title, style: { color: "#fff", fontSize: 20,fontFamily:'Montserrat-Regular' } }:this.props.centerComponent}
