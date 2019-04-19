@@ -40,6 +40,7 @@ import commonStyle from '../../styles';
 import colors from '../../colors';
 import PhotoView from 'react-native-photo-view';
 import CodeInput from 'react-native-confirmation-code-input';
+import RNPickerSelect from 'react-native-picker-select'
 //import ImageModal from '../../Components/ImageViewModal';
 var Api = null;
 
