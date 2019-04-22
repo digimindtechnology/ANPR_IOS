@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text,ScrollView, FlatList, Picker, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {StyleSheet, View,Text,ScrollView, FlatList, Picker, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl,Platform} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -429,6 +429,17 @@ reload = () => {
                   onChangeInput={(text) => this.setState({makerNameSeached:text})}
                   displayKey="Text"
                   placeholder='Makers Name' /> */}
+                  {Platform.OS=='ios'?
+                   <View style={{ marginTop:5,width:"90%",height:40,borderBottomWidth:1,borderBottomColor:'#8c8c8c',justifyContent:'center'}}>                         
+                     <Text
+                      style={{
+                        marginLeft:10,
+                        fontSize:16,
+                        coor:'#bfbfbf'
+                      }}
+                     >Maker Name</Text>
+                   </View>
+                   :
                      <View style={{ marginTop:5,width:"100%",marginLeft:33 }}>
                          
                         <Input
@@ -450,7 +461,7 @@ reload = () => {
                           //}}
                         />
                      </View>
-                 
+                  }
                  {/* <MultiselectPicker 
                   //title={'Attendees Contact *'}
                   items={this.state.maker_Classification_Select_List}
@@ -482,6 +493,7 @@ reload = () => {
                            //}}
                          />
                       </View>
+                  
                   <View style={{ marginTop:5,width:"100%",marginLeft:33 }}>
                   <Input
                  ref={(input) => { this.textInput = input; }}
@@ -857,8 +869,7 @@ reload = () => {
         >
         
           <ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
-            <View>
-              
+            <View style={{marginTop:(Platform.OS=='ios'?20:0)}}>              
           <Autocomplete
                             //data={this.findMakerName()}
                  data={makerData.length === 1&& comp(this.state.maker_name, makerData[0].Text) ? [] :makerData}
@@ -878,7 +889,32 @@ reload = () => {
                  </TouchableOpacity>
                  )}
              />
-           <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
+             {Platform.OS=='ios'?
+
+                 <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
+                   <TouchableOpacity 
+                      onPress={() => {this.setState({maker_name:'',modalMaker:false},()=>{this.textInputMaekersName.blur()})}}>
+                    <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                        <View style={{ flexDirection: 'row' }}>
+                           <MaterialCommunityIcons name="close-circle-outline" size={20} color="#fff" />
+                           <Text style={{ color: '#fff', marginLeft: 10 }}>Back</Text>
+                        </View>
+                   </Card>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{marginLeft:5}} 
+                      onPress={() => {this.setState({modalMaker:false},()=>{this.getMakerClassificationSelectList();
+                                      this.textInputMaekersName.isFocused=false})
+                                     }}>
+                   <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                     <View style={{ flexDirection: 'row' }}>
+                        <MaterialCommunityIcons name="check" size={20} color="#fff" />
+                        <Text style={{ color: '#fff', marginLeft: 10 }}>Submit</Text>
+                    </View>
+                  </Card>
+                  </TouchableOpacity>
+               </View>  
+             :
+             <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
                 <View style={{width:'50%'}}>
                  <Button 
                   title="Back"
@@ -907,7 +943,7 @@ reload = () => {
                   </Button>
                   </View>
            </View>
-
+           }
            </View>  
           </ScrollView>
          
