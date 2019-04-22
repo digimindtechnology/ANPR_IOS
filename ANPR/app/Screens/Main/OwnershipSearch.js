@@ -977,7 +977,7 @@ reload = () => {
         >
         
           <ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
-            <View Style={{marginTop:(Platform.OS=='ios'?20:0)}}>
+            <View style={{marginTop:(Platform.OS=='ios'?20:0)}}>
             <Autocomplete
                             data={modelData.length === 1&& comp(this.state.maker_classification_name, modelData[0].Text) ? [] :modelData}
                             defaultValue={this.state.maker_classification_name}
