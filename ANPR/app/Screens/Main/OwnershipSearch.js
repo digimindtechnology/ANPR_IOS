@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text,ScrollView, FlatList, Picker, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {StyleSheet, View,Text,ScrollView, FlatList, Picker, TextInput, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl,Platform} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -429,9 +429,8 @@ reload = () => {
                   onChangeInput={(text) => this.setState({makerNameSeached:text})}
                   displayKey="Text"
                   placeholder='Makers Name' /> */}
-                     <View style={{ marginTop:5,width:"100%",marginLeft:33 }}>
-                         
-                        <Input
+                     <View style={{ marginTop:5,width:"100%",marginLeft:33}}>
+                         <Input
                            ref={(input) => { this.textInputMaekersName = input; }}
                            value={this.state.maker_name}
                            style={{ width:'100%', padding: 0, margin: 0 }}
@@ -448,7 +447,7 @@ reload = () => {
                           // this.validateEngineNo(this.state.engine_no)
                           //this.passwordInput.focus()
                           //}}
-                        />
+                        /> 
                      </View>
                  
                  {/* <MultiselectPicker 
@@ -857,7 +856,7 @@ reload = () => {
         >
         
           <ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
-            <View>
+            <View style={{marginTop:(Platform.OS=='ios'?20:0)}}>
               
           <Autocomplete
                             //data={this.findMakerName()}
@@ -878,7 +877,7 @@ reload = () => {
                  </TouchableOpacity>
                  )}
              />
-           <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
+       <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
                 <View style={{width:'50%'}}>
                  <Button 
                   title="Back"
@@ -907,6 +906,7 @@ reload = () => {
                   </Button>
                   </View>
            </View>
+        
 
            </View>  
           </ScrollView>

@@ -196,6 +196,7 @@ export default class VehicleSearch extends Component {
           this.setState({subCityList:res.Object});
           if(Platform.OS=='ios'){
             this.setState({formated_subCityList:res.Object})
+            
           }
         }
       }else{
