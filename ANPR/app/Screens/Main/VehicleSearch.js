@@ -195,8 +195,7 @@ export default class VehicleSearch extends Component {
         } else {
           this.setState({subCityList:res.Object});
           if(Platform.OS=='ios'){
-            this.setState({formated_subCityList:res.Object})
-            
+           this.getFormatedCity(res.Object);
           }
         }
       }else{
@@ -224,7 +223,7 @@ export default class VehicleSearch extends Component {
         } else {
           this.setState({locationList:res.Object});
           if(Platform.OS=='ios'){
-            this.setState({formated_locationList:res.Object})
+            this.getFormatedLocation(res.Object);
           }
         }
       }else{
