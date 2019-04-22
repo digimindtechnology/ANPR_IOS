@@ -435,7 +435,7 @@ reload = () => {
                       style={{
                         marginLeft:10,
                         fontSize:16,
-                        coor:'#bfbfbf'
+                        color:'#bfbfbf'
                       }}
                      >Maker Name</Text>
                    </View>
