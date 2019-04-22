@@ -77,6 +77,21 @@ export default class API extends RestClient {
     GetAppVersion(data){
         return this.POST('GetAppVersion',data);
     }
+    
+    PostOTP(data){
+        return this.POST('PostOTP',data);
+    }
 
+    VehicleHistoryByCity(data){
+        return this.POST('VehicleHistoryByCity',data);
+    }
+
+    GetSubCityList(data){
+        return this.POST('GetSubCityList',data)
+    }
+
+    GetLocationList(data){
+        return this.POST('GetLocationList',data)
+    }
 
 }

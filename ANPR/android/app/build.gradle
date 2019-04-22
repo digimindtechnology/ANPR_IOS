@@ -101,8 +101,8 @@ android {
         applicationId "com.digimind.vdp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 10
+        versionName "1.9"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -149,6 +149,9 @@ android {
 
 dependencies {
     compile project(':react-native-photo-view')
+    compile project(':react-native-view-pdf')
+    compile project(':react-native-device-info')
+   
     compile project(':react-native-firebase')
     compile (project(':react-native-maps')){
       exclude group: 'com.android.support'

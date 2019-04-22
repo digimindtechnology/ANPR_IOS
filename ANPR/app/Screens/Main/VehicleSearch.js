@@ -17,11 +17,12 @@ import {
   Image, 
   AsyncStorage,
   NetInfo, 
-  ActivityIndicator,
+  ActivityIndicator, 
   Modal, 
-  TouchableOpacity,
+  TouchableOpacity, 
   RefreshControl,
-  Platform} from 'react-native';
+  Platform
+} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -38,6 +39,7 @@ import moment from 'moment-timezone';
 import commonStyle from '../../styles';
 import colors from '../../colors';
 import PhotoView from 'react-native-photo-view';
+import CodeInput from 'react-native-confirmation-code-input';
 import RNPickerSelect from 'react-native-picker-select'
 //import ImageModal from '../../Components/ImageViewModal';
 var Api = null;
@@ -53,7 +55,7 @@ var Api = null;
 // }
 
 
-export default class VehicleNotMatched extends Component {
+export default class VehicleSearch extends Component {
 
   _didFocusSubscription;
   _willBlurSubscription;
@@ -71,21 +73,26 @@ export default class VehicleNotMatched extends Component {
       companyLogo : '',
       modalVisible : false,
       refreshing : false,
-      start_date: moment(new Date()).subtract(1,'day').format("DD-MMM-YYYY"),
-      end_date: moment(new Date()).format("DD-MMM-YYYY"),
+      //start_date: moment(new Date()).subtract(1,'day').format("DD-MMM-YYYY"),
+      start_date: moment(new Date()).subtract(1,'hour').format("DD-MMM-YYYY HH:mm"),
+      end_date: moment(new Date()).format("DD-MMM-YYYY HH:mm"),
       registration_number: null,
       vehicle_list: [],
-      district_list: [],
-      police_station_list: [],
+     subCityList: [],
+      locationList: [],
+      formated_subCityList: [],
+      formated_locationList: [],
       is_map_show: false,
-      district_id: '',
-      police_station_id: '',
+      city_id: '',
+      location_id: '',
       image_url:'',
       page:0,
       ckeck_Variable:0,
+      state_name:'',
+      state_code:'',
+      ref_code: '',
+      num: '',
       vehicle_number:'',
-      formated_district_list: [],
-      formated_police_station_list: [],
       
     }
      this.reload = this.reload.bind(this);
@@ -165,8 +172,8 @@ export default class VehicleNotMatched extends Component {
       // userInfo = dt;
       this.setState({userInfo: dt});
       console.log('dt',dt);
-      this.getDistrict(dt.UserID,dt.CompanyID);
-      this.getSuspectedVehicleNotMatchedList()
+      this.getGetSubCityList();
+      //this.VehicleHistoryByCity()
     }).catch(err=>console.log('error occurred in user detail',err));
   }
 
@@ -174,23 +181,21 @@ export default class VehicleNotMatched extends Component {
     this.setState({ isLoading: state, loading_message: message });
   }
 
-  getDistrict = (user_id,company_id) => {
-      const data = {
-        user_id: user_id,
-        company_id: company_id,
+  getGetSubCityList = () => {
+      const data = {        
         AuthKey: "MPP0L1CERHQ"
       }
      // this.showProgress(true);
-      Api.GetDistrict(data).then(res => {
-        console.log('GetDistrict',res);
+      Api.GetSubCityList(data).then(res => {
+        console.log('GetSubCityList:',res);
        // this.showProgress(false);
       if (res) {
         if (res.MessageType != 0) {
           Toast.show('We\'re facing some technical issues!');
         } else {
-          this.setState({district_list:res.Object});
+          this.setState({subCityList:res.Object});
           if(Platform.OS=='ios'){
-            this.getFormatedDistrict(res.Object);
+            this.setState({formated_subCityList:res.Object})
           }
         }
       }else{
@@ -203,22 +208,22 @@ export default class VehicleNotMatched extends Component {
     })
   }
 
-  getPoliceStationByCity = (district_id) => {
+  getGetLocationList = (id) => {
       const data = {
-        district_id: district_id,
+        id: id,
         AuthKey: "MPP0L1CERHQ"
       }
       this.showProgress(true);
-      Api.GetPoliceStationByCity(data).then(res => {
-        console.log('GetPoliceStationByCity',res);
+      Api.GetLocationList(data).then(res => {
+        console.log('GetLocationList',res);
         this.showProgress(false);
       if (res) {
         if (res.MessageType != 0) {
           Toast.show('We\'re facing some technical issues!');
         } else {
-          this.setState({police_station_list:res.Object});
+          this.setState({locationList:res.Object});
           if(Platform.OS=='ios'){
-            this.getFormatedPoliceStation(res.Object);
+            this.setState({formated_locationList:res.Object})
           }
         }
       }else{
@@ -231,25 +236,35 @@ export default class VehicleNotMatched extends Component {
     })
   }
 
-  getSuspectedVehicleNotMatchedList = (district_id,police_station_id) => {
+  VehicleHistoryByCity = (city_id,location_id) => {
+  //  if(this.state.city_id==null){
+  //    Toast.show('Please Select City');
+  //    return
+  //  }
+
+
     const data = {
       start_date:this.state.start_date,
       end_date:this.state.end_date,
-      district_id:district_id,
-      police_station_id:police_station_id,
-      user_id:this.state.userInfo.UserID,
-      company_id:this.state.userInfo.CompanyID,
-      page_index:this.state.page,      
+      subCityId:city_id,
+      locationId:location_id==null?0:location_id,
+      RegNum1:this.state.state_name,
+      RegNum2:this.state.state_code,
+      RegNum3:this.state.ref_code,
+      RegNum4:this.state.num,
+      UserID:this.state.userInfo.UserID,
+      CompanyID:this.state.userInfo.CompanyID,
+      page_index:this.state.page,
       page_size:10,
-      AuthKey:"MPP0L1CERHQ"
+      AuthKey:"MPP0L1CERHQ"  
     }
     
-    console.log('data',data);
+    console.log('VehicleHistoryByCity data:',data);
 
     this.showProgress(true);
-    Api.SuspectedVehicleNotMatchedMpTransport(data).then(res => {
+    Api.VehicleHistoryByCity(data).then(res => {
        
-      console.log('SuspectedVehicleNotMatchedMpTransport',res);
+      console.log('VehicleHistoryByCity',res);
          
       this.showProgress(false);
     if (res) {
@@ -278,9 +293,11 @@ export default class VehicleNotMatched extends Component {
 //comment
 
 reload = () => {
-  //this.getSuspectedVehicleNotMatchedList()
-  this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id);
+  //this.VehicleHistoryByCity()
+  this.VehicleHistoryByCity(this.state.city_id,this.state.location_id);
 }
+
+
 
   renderList({item,key}) {
     // return vehicle_list.map((item,key) => {
@@ -295,7 +312,7 @@ reload = () => {
         </View>
         <View style={{ flexDirection: 'row', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, padding: 10 }}>
           <View style={{ flexDirection: 'row', }}>
-           {Platform.OS=='ios'?
+          {Platform.OS=='ios'?
             <Avatar
               size="medium"
               rounded
@@ -305,11 +322,11 @@ reload = () => {
                 borderWidth:1,
                // padding:1
               }}
-             // imageProps={{style:{borderRadius:50}}}
+              //imageProps={{style:{borderRadius:50}}}
               source={{uri:item.image_name}}
-             // onPress={() => {this.setState({modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
-             onPress={() => {this.setState({image_url:item.image_name,vehicle_number:item.LicenseNum,modalVisible: true},()=>console.log('Url:',this.state.image_url))}}
-             // onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
+              // onPress={() => {this.setState({modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
+              onPress={() => {this.setState({image_url:item.image_name,vehicle_number:item.LicenseNum,modalVisible: true},()=>console.log('Url:',this.state.image_url))}}
+              // onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
               activeOpacity={0.2}
             />
             :
@@ -320,9 +337,9 @@ reload = () => {
               containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
               imageProps={{style:{borderRadius:50}}}
               source={{uri:item.image_name}}
-             // onPress={() => {this.setState({modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
-             onPress={() => {this.setState({image_url:item.image_name,vehicle_number:item.LicenseNum,modalVisible: true},()=>console.log('Url:',this.state.image_url))}}
-             // onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
+              // onPress={() => {this.setState({modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}}
+              onPress={() => {this.setState({image_url:item.image_name,vehicle_number:item.LicenseNum,modalVisible: true},()=>console.log('Url:',this.state.image_url))}}
+              // onPress={()=>this.props.navigation.navigate('LargePhotoView',{image_url:item.image_name,vehical_num:item.LicenseNum})}
               activeOpacity={0.2}
             />
             }
@@ -342,7 +359,24 @@ reload = () => {
     this.setState({image_url:url});
     console.log('URL:',this.state.image_url);
   }
-  getFormatedDistrict(items){
+  resetData(){
+    //Toast.show('This is Reset Press');
+    this.setState({vehicle_list:[]});
+    //this.setState({is_map_show:false})
+    this.refs.state_code.clear();
+    this.setState({state_code:''});
+    this.refs.ref_code.clear();
+    this.setState({ref_code:''});
+    this.refs.num.clear();
+    this.setState({num:''});
+    this.refs.state.clear();
+    this.setState({state_name:'',locationList:[],location_id:null,city_id:null});
+    this.setState({ start_date: moment(new Date()).subtract(1,'hour').format("DD-MMM-YYYY HH:mm"),
+    end_date: moment(new Date()).format("DD-MMM-YYYY HH:mm")});
+    
+  }
+
+  getFormatedCity(items){
     var format_item=[];
     items.map((item)=>{
       format_item.push({
@@ -350,9 +384,9 @@ reload = () => {
       value:item.Value,
       });
     })
-    this.setState({formated_district_list:format_item});
+    this.setState({formated_subCityList:format_item});
   }
-  getFormatedPoliceStation(items){
+  getFormatedLocation(items){
     var format_item=[];
     items.map((item)=>{
       format_item.push({
@@ -360,8 +394,9 @@ reload = () => {
       value:item.Value,
       });
     })
-    this.setState({formated_police_station_list:format_item});
+    this.setState({formated_locationList:format_item});
   }
+
   render() {
     const {userInfo} = this.state;
     return (
@@ -376,7 +411,7 @@ reload = () => {
         
         />
 
-        <View style={{ width: '100%', margin: 0, marginTop: -90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>
+        <View style={{width: '100%', margin: 0, marginTop: -90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>
           {/* <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <Text style={{ color: '#fff' }}>ANPR Log</Text>
           </View> */}
@@ -389,12 +424,12 @@ reload = () => {
                 <DatePicker
                   style={{flex:1,  padding:0,height:20}}
                   date={this.state.start_date}
-                  mode="date"
+                  mode="datetime"
                   placeholder="select date"
                   showIcon={true}
-                  format="DD-MMM-YYYY"
-                  minDate="01-Jan-2010"
-                  maxDate="31-Dec-2030"
+                  format="DD-MMM-YYYY HH:mm"
+                  minDate="01-Jan-2010 00:00"
+                  maxDate="31-Dec-2030 24:60"
                   confirmBtnText="Confirm"
                   cancelBtnText="Cancel"
                   customStyles={{
@@ -430,12 +465,12 @@ reload = () => {
                 <DatePicker
                   style={{flex:1,padding:0,height:20}}
                   date={this.state.end_date}
-                  mode="date"
+                  mode="datetime"
                   placeholder="select date"
                   showIcon={true}
-                  format="DD-MMM-YYYY"
-                  minDate="01-Jan-2010"
-                  maxDate="31-Dec-2030"
+                  format="DD-MMM-YYYY HH:mm"
+                  minDate="01-Jan-2010 00:00"
+                  maxDate="31-Dec-2030 24:60"
                   confirmBtnText="Confirm"
                   cancelBtnText="Cancel"
                   customStyles={{
@@ -467,86 +502,88 @@ reload = () => {
               </View>
 
               <View style={{ flexDirection: 'column', width: '100%', marginTop: 10, backgroundColor: '#fafafa', borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
-                    {Platform.OS=='ios'?
+                    
+              {Platform.OS=='ios'?
                       <RNPickerSelect
                         placeholder={{
-                          label:'Please select district',
+                          label:'Please select city',
                           value:null,
                         }}
-                        items={this.state.formated_district_list}
+                        items={this.state.formated_subCityList}
                         style={{...pickerSelectStyles}}
                         onValueChange={(itemValue)=>{
                           if(itemValue){
-                            this.setState({district_id:itemValue})
-                            this.getPoliceStationByCity(itemValue);
+                            this.setState({city_id:itemValue})
+                            this.getGetLocationList(itemValue);
                           }else{
-                            this.setState({district_id:null,formated_police_station_list:[],police_station_list:[]})
-                          }
+                            this.setState({ city_id: null });
+                            this.setState({locationList: []});                            
+                        }
                         }}
-                        value={this.state.district_id}
+                        value={this.state.city_id}
                       />
-                    :  
+                    :                      
                     <Picker
                         mode='dropdown'
-                        selectedValue={this.state.district_id}
+                        selectedValue={this.state.city_id}
                         style={{ width:'100%', padding: 0, margin: 0 }}
                         onValueChange={(itemValue, itemIndex) => {
                             if(itemIndex>0){
-                                this.setState({ district_id: itemValue })
-                                this.getPoliceStationByCity(itemValue);
+                                this.setState({ city_id: itemValue })
+                                this.getGetLocationList(itemValue);
                             }else{
-                                this.setState({ district_id: null });
-                                this.setState({police_station_list: []});
+                                this.setState({ city_id: null });
+                                this.setState({locationList: []});
                                 
                             }
                         }}>
-                        <Picker.Item label="Please select district" value={null} />
-                        {this.state.district_list.map((item, key) => (
+                        <Picker.Item label="Please select city" value={null} />
+                        {this.state.subCityList.map((item, key) => (
                             <Picker.Item label={item.Text} value={item.Value} key={key}/>)
                         )}
                     </Picker>
-                    }
-
-                    {Platform.OS=='ios'?
+              }
+               {Platform.OS=='ios'?
                       <RNPickerSelect
                         placeholder={{
-                          label:'Please select Police Station',
+                          label:'Please select location',
                           value:null,
                         }}
-                        items={this.state.formated_police_station_list}
+                        items={this.state.formated_locationList}
                         style={{...pickerSelectStyles}}
                         onValueChange={(itemValue,itemIndex)=>{
                           if(itemIndex>0){
-                            this.setState({police_station_id:itemValue});                            
+                            this.setState({ location_id: itemValue })
                           }else{
-                            this.setState({police_station_id:'',vehicle_list:[]})
+                            this.setState({ vehicle_list: [] })
+                            this.setState({ location_id: null });
                           }
                         }}
-                        value={this.state.police_station_id}
+                        value={this.state.location_id}
                       />
                     :  
                     <Picker
                         mode='dropdown'
-                        selectedValue={this.state.police_station_id}
+                        selectedValue={this.state.location_id}
                         style={{ width:'100%', padding: 0, margin: 0 }}
                         onValueChange={(itemValue, itemIndex) => {
                             if(itemIndex>0){
-                                this.setState({ police_station_id: itemValue })
-                                // this.getSuspectedVehicleNotMatchedList(this.state.district_id,itemValue)
+                                this.setState({ location_id: itemValue })
+                                // this.VehicleHistoryByCity(this.state.city_id,itemValue)
                             }else{
                                 this.setState({ vehicle_list: [] })
-                                this.setState({ police_station_id: null });
+                                this.setState({ location_id: null });
                             }
                             
                         }}>
-                        <Picker.Item label="Please select Police Station" value={null} />
-                        {this.state.police_station_list.map((item, key) => (
-                            <Picker.Item label={item.Text} value={item.Value} />)
+                        <Picker.Item label="Please select location" value={null} />
+                        {this.state.locationList.map((item, key) => (
+                            <Picker.Item label={item.Text} value={item.Value} key={key}/>)
                         )}
                     </Picker>
-                    }
+               }
                     {/* <View style={{ width: '100%', paddingRight: 10, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                        <TouchableOpacity onPress={() => this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id)}>
+                        <TouchableOpacity onPress={() => this.VehicleHistoryByCity(this.state.city_id,this.state.location_id)}>
                             <Card containerStyle={{ margin: 0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <MaterialCommunityIcons name="search" size={20} color="#fff" />
@@ -556,11 +593,135 @@ reload = () => {
                         </TouchableOpacity>
                     </View> */}
               </View>
+
+              <Text style={{fontSize:17,marginTop: 10}}>Enter Vehicle Number</Text>
+              <View style={{ flexDirection: 'row', width: '100%',  backgroundColor: '#fafafa', padding:5, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
+                {/* <TextInput
+                  style={{ flex: 1 }}
+                  inputContainerStyle={styles.input_container_style}
+                  inputStyle={styles.input_style}
+                  errorStyle={styles.errorInputStyle}
+                  ref={input => this.userInput = input}
+                  value={this.state.registration_number}
+                  onChangeText={registration_number => this.setState({ registration_number })}
+                  placeholder="Registration Number(eg:MP04MN1118)"
+                  returnKeyType="next"
+                /> */}
+                <CodeInput
+                  ref="state"
+                  keyboardType='default'
+                  size={25}
+                  space={0}
+                  placeholder='X'
+                  codeLength={2}
+                  activeColor='#3589c5'
+                  inactiveColor='#000'
+                  className='border-b'
+                  cellBorderWidth={2}                
+                  containerStyle={{flex:0, marginTop:0}}
+                  autoFocus={false}
+                  codeInputStyle={{ color:'#3589c5' }}
+                  onChangeText={(code) => this.setState({state_name:code})}
+                  onFulfill={(code) => {
+                    console.log(code,/[a-zA-Z]{2}/.test(code));
+                    if(/[a-zA-Z]{2}/.test(code)){
+                      this.refs.state_code.clear()
+                      this.setState({state_name:code});
+                    }
+                    else{
+                      this.refs.state.clear()
+                      this.setState({state_name:''});
+                    }
+                  }}
+                />
+
+                <CodeInput
+                  ref="state_code"
+                  keyboardType='number-pad'
+                  size={25}
+                  space={0}
+                  codeLength={2}
+                  placeholder='0'
+                  className='border-b'
+                  cellBorderWidth={2}
+                  containerStyle={{flex:0, marginTop:0,marginLeft:10}}
+                   autoFocus={false}
+                  activeColor='#3589c5'
+                  inactiveColor='#000'
+                  codeInputStyle={{ color:'#3589c5' }}
+                  onFulfill={(code) => {
+                    //console.log(code,/[0-9]{2}/.test(code));
+                   if(/[0-9]{2}/.test(code)){
+                     this.refs.ref_code.clear()
+                      this.setState({state_code:code});
+                   }else{
+                     this.refs.state_code.clear()
+                     this.setState({state_code:''});
+                   }
+                  }}
+                />
+
+                <CodeInput
+                  ref="ref_code"
+                  keyboardType='default'
+                  size={25}
+                  space={0}
+                  codeLength={2}
+                  placeholder='X'
+                  className='border-b'
+                  cellBorderWidth={2}
+                  containerStyle={{flex:0, marginTop:0, marginLeft:10}}
+                  activeColor={'#3589c5'}
+                  inactiveColor='#000'
+                   autoFocus={false}
+                  //onSubmitEditing={()=>this.refs.num.clear()}
+                  codeInputStyle={{ color:'#3589c5', }}               
+
+                  onFulfill={(code) => {
+                    console.log(code,/[a-zA-Z]{2}/.test(code));
+                    if(code.length>0&&/[a-zA-Z]/.test(code)){
+                      this.refs.num.clear()
+                      this.setState({ref_code:code});
+                    }else{
+                      //this.refs.ref_code.clear()
+                      this.setState({ref_code:''});
+                    }
+                  }}
+                />
+
+                <CodeInput
+                  ref="num"
+                  keyboardType='number-pad'
+                  size={25}
+                  space={0}
+                  codeLength={4}
+                  placeholder='0'
+                  className='border-b'
+                  cellBorderWidth={2}
+                  containerStyle={{flex:0, marginTop:0, marginLeft:10}}
+                  autoFocus={false}
+                  activeColor='#3589c5'
+                  inactiveColor='#000'
+                  codeInputStyle={{ color:'#3589c5' }}
+                 
+                  onFulfill={(code) => {
+                   // console.log(code,/[0-9]{4}/.test(code));
+                   if(/[0-9]{4}/.test(code)){
+                      this.setState({num:code});
+                   }else{
+                     this.refs.num.clear()
+                     this.setState({num:''});
+                   }
+                  }}
+                />
+
+                {/* <Button title='search' /> */}
+              </View>
               {/* <View style={{height:30,width: '100%'}}></View> */}
             </View>
             {/* } */}
             {/* <View style={{ position: 'absolute', bottom: -25, alignSelf:'center',paddingTop:10}}>
-              <TouchableOpacity onPress={() => this.setState({page:0,vehicle_list:[]},()=>this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id))}>
+              <TouchableOpacity onPress={() => this.setState({page:0,vehicle_list:[]},()=>this.VehicleHistoryByCity(this.state.city_id,this.state.location_id))}>
                
                 <View style={{height: 40, width: 40, backgroundColor: colors.button_color, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
                   <FontAwesome name="search" size={15} color="#fff" />
@@ -570,8 +731,8 @@ reload = () => {
               </TouchableOpacity>
             </View> */}
 
-               <View style={{ width: '100%', paddingRight:10,marginTop:20, flexDirection:'row', justifyContent:'center' }}>
-                <TouchableOpacity onPress={()=>this.setState({page:0,vehicle_list:[]},()=>this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id))}>
+               {/* <View style={{width: '100%', paddingRight:10,marginTop:20, flexDirection:'row', justifyContent:'center' }}>
+                <TouchableOpacity onPress={()=>this.setState({page:0,vehicle_list:[]},()=>this.VehicleHistoryByCity(this.state.city_id,this.state.location_id))}>
                   <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
                     <View style={{ flexDirection: 'row' }}>
                       <FontAwesome name="search" size={20} color="#fff" />
@@ -579,7 +740,42 @@ reload = () => {
                    </View>
                   </Card>
                 </TouchableOpacity>
-              </View>
+              </View> */}
+               <View style={{width: '100%', paddingRight:10,marginTop:20, flexDirection:'row', justifyContent:'center' }}>
+                <TouchableOpacity onPress={()=>{
+                if(this.state.subCityList.length!=0){
+                  if(this.state.city_id!=null){
+                    this.setState({page:0,vehicle_list:[]},()=>this.VehicleHistoryByCity(this.state.city_id,this.state.location_id))
+
+                  }else{
+                    Toast.show('Please select city.')
+                  }
+                 
+                }else{
+                  Toast.show('City list not available.')
+                }
+             
+              }}>
+                  <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <FontAwesome name="search" size={20} color="#fff" />
+                       <Text style={{ color: '#fff', marginLeft: 10 }}>Search</Text>
+                   </View>
+                  </Card>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{marginLeft:5}} onPress={()=>{
+                  this.resetData();
+                }}>
+                  <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <MaterialCommunityIcons name="close-circle-outline" size={20} color="#fff" />
+                       <Text style={{ color: '#fff', marginLeft: 10 }}>Clear</Text>
+                   </View>
+                  </Card>
+                </TouchableOpacity>
+            </View>
+
 
           </Card>
         </View>
@@ -681,7 +877,7 @@ reload = () => {
             />
         </View>
       </View>     
-              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center',marginTop:(Platform.OS=='ios'?20:0) }}>
+              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center',marginTop:(Platform.OS=='ios'?20:0)}}>
 
                <TouchableOpacity activeOpacity={.3}
                 style={{
@@ -701,7 +897,7 @@ reload = () => {
        
 {/* 
            <View style={{ position: 'absolute', top: 225, alignSelf:'center',paddingTop:10}}>
-              <TouchableOpacity style={{ elevation: 8 }} activeOpacity={0.2} onPress={() => this.setState({page:0,vehicle_list:[]},()=>this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id))}>
+              <TouchableOpacity style={{ elevation: 8 }} activeOpacity={0.2} onPress={() => this.setState({page:0,vehicle_list:[]},()=>this.VehicleHistoryByCity(this.state.city_id,this.state.location_id))}>
                 <View style={{height: 50, width: 50, backgroundColor: colors.button_color, borderRadius: 25, justifyContent: 'center', alignItems: 'center' }}>
                   <FontAwesome name="search" size={22} color="#fff" />
                 </View>
@@ -729,7 +925,7 @@ reload = () => {
     }, () => {
       // if (this.state.page % 5 == 0) {
         //if(this.state.page!=this.state.ckeck_Variable){
-        this.getSuspectedVehicleNotMatchedList(this.state.district_id,this.state.police_station_id);
+        this.VehicleHistoryByCity(this.state.city_id,this.state.location_id);
         //}
      // }
     });

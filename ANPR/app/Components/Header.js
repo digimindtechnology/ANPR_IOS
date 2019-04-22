@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {View} from 'react-native';
+import {View,Platform} from 'react-native';
 import {Header} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -18,7 +18,8 @@ export default class AppHeader extends Component{
                     statusBarProps={{ backgroundColor: '#1e3d7d' }}
                     // backgroundColor='#93e7ff'
                     backgroundColor='#1e3d7d'
-                    containerStyle={{ borderBottomWidth: 0 }}
+                   // containerStyle={{ borderBottomWidth: 0 }}
+                    containerStyle={{ marginTop:0, paddingTop:(Platform.OS=='ios'?10:0), borderBottomWidth: 0, height: (Platform.OS === 'ios' ? 70 : 50) }}
                     leftComponent={this.props.leftComponent}
                     rightComponent={this.props.rightComponent}
                     centerComponent={this.props.title?{ text: this.props.title, style: { color: "#fff", fontSize: 20,fontFamily:'Montserrat-Regular' } }:this.props.centerComponent}

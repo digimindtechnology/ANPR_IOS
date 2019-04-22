@@ -5,7 +5,25 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text, ScrollView, FlatList, Alert, TextInput, Platform, Keyboard, Image, AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl} from 'react-native';
+import {StyleSheet, 
+  View,
+  Text, 
+  ScrollView, 
+  FlatList, 
+  Alert, 
+  TextInput, 
+  Platform, 
+  Keyboard, 
+  Image, 
+  AsyncStorage, 
+  NetInfo, 
+  ActivityIndicator, 
+  Modal, 
+  TouchableOpacity, 
+  RefreshControl,
+  Linking,
+  
+} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -23,6 +41,7 @@ import colors from '../../colors';
 
 import CodeInput from 'react-native-confirmation-code-input';
 import PhotoView from 'react-native-photo-view';
+import DeviceInfo from 'react-native-device-info';
 
 var Api = null;
 
@@ -137,24 +156,24 @@ export default class Home extends Component {
     var data;
     if(Platform.OS==='android'){
       data = {
-        appName: 'com.digimind.vdp',
+        //appName: 'com.digimind.vdp',
         appType: 'Android',
-        AuthKey: MPP0L1CERHQ      
+        AuthKey: 'MPP0L1CERHQ'      
       }
     }else if(Platform.OS==='ios'){
       data = {
-        appName: 'com.digimind.vdp',
+        //appName: 'com.digimind.vdp',
         appType: 'Ios',
         AuthKey: 'MPP0L1CERHQ'      
       }
     }
 
     console.log('Version Data',data);
-
+    console.log('DeviceInfo.getBuildNumber():',DeviceInfo.getBuildNumber());
     Api.GetAppVersion(data).then((res)=>{
         console.log('GetAppVersion',res);
         if(Platform.OS==='android'){
-          if(res.Object.version>MediaDeviceInfo.getBuildNumber()){
+          if(res.Object.version>DeviceInfo.getBuildNumber()){
           Alert.alert(
             'Update Available!',
             'A new version of this app is available',
@@ -274,16 +293,33 @@ reload = () => {
         </View>
         <View style={{ flexDirection: 'row', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, padding: 10, alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', }}>
-
+            {Platform.OS=='ios'?
             <Avatar
               size="medium"
               rounded
-              containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
-              imageProps={{style:{borderRadius:50}}}
+              icon={{name: 'camera-off', type: 'feather'}}
+              containerStyle={{
+                borderColor:'#ccc',
+                borderWidth:1, 
+               // padding:1
+              }}
+             // imageProps={{style:{borderRadius:50}}}
               source={{ uri: item.image_name }}
               onPress={() => this.setState({modaleVisiblePhoto:true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}
               activeOpacity={0.2}
             />
+            :
+            <Avatar
+            size="medium"
+            rounded
+            icon={{name: 'camera-off', type: 'feather'}}
+            containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
+            imageProps={{style:{borderRadius:50}}}
+            source={{ uri: item.image_name }}
+            onPress={() => this.setState({modaleVisiblePhoto:true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}
+            activeOpacity={0.2}
+          />
+          }
 
           </View>
           <View style={{ flex: 1, marginTop: 5, marginLeft: 10 }}>
@@ -321,6 +357,7 @@ reload = () => {
     const {userInfo} = this.state;
     return (
       <View style={{ flex: 1 }}>
+      
         <CustomHeader height={90} 
         leftComponent={<Entypo name='menu' color={"#fff"} style={{padding:10}} size={25} onPress={()=>this.props.navigation.toggleDrawer()} />} 
         title={userInfo.FullName?userInfo.FullName:'Vehicle List'} 
@@ -504,11 +541,11 @@ reload = () => {
                   codeInputStyle={{ color:'#3589c5', }}
                   onFulfill={(code) => {
                     console.log(code,/[a-zA-Z]{2}/.test(code));
-                    if(/[a-zA-Z]{2}/.test(code)){
+                    if(code.length>0&&/[a-zA-Z]/.test(code)){
                       this.refs.num.clear()
                       this.setState({ref_code:code});
                     }else{
-                      this.refs.ref_code.clear()
+                      //this.refs.ref_code.clear()
                       this.setState({ref_code:''});
                     }
                   }}
@@ -760,7 +797,7 @@ reload = () => {
                                       color='red' 
                                       size={30}/>
             </TouchableOpacity> */}
-              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+              <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center',marginTop:(Platform.OS=='ios'?20:0)}}>
 
                <TouchableOpacity activeOpacity={.3}
                 style={{

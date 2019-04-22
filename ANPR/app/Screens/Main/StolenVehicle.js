@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import {StyleSheet, View,Text, ScrollView, TextInput, Keyboard,FlatList, Image,AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl,TouchableHighlight} from 'react-native';
+import {StyleSheet, View,Text, ScrollView, TextInput, Keyboard,FlatList, Image,AsyncStorage, NetInfo, ActivityIndicator, Modal, TouchableOpacity, RefreshControl,TouchableHighlight,Platform} from 'react-native';
 import { Card, Icon, Input, Button, ListItem, Avatar} from 'react-native-elements';
 import ProjectListComponent from '../../Components/ProjectListComponent';
 import CustomHeader from '../../Components/Header';
@@ -67,7 +67,7 @@ export default class StolenVehicle extends Component {
       is_map_show: false,
       image_url:'',
       alert_Message:'',
-      mobile_No:null,
+      mobile_No:'',
       page:0,
       showFooter: false,
       endOfList: false,
@@ -192,6 +192,7 @@ export default class StolenVehicle extends Component {
 
             if (res.Object.length == 0) {
               this.setState({ endOfList: true });
+              Toast.show('No data available')
             }
 
           }
@@ -210,11 +211,15 @@ export default class StolenVehicle extends Component {
   }
 
   getSendPartialMessage = () => {
-
+    if(this.state.mobile_No.length==0){
+      Toast.show("Please enter mobile number !!!",Toast.SHORT);
+      return;
+    }
     if(this.state.mobile_No.length<10){
       Toast.show("Please enter valid number !!!",Toast.SHORT);
       return;
     }
+  
 
     const data = {
       user_id:this.state.userInfo.UserID,
@@ -276,16 +281,33 @@ reload = () => {
         </View>
         <View style={{ flexDirection: 'row', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, padding: 10 }}>
           <View style={{ flexDirection: 'column',alignItems:'center' }}>
-
+            {Platform.OS=='ios'?
             <Avatar
               size="medium"
               rounded
-              containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
-              imageProps={{style:{borderRadius:50}}}
+              icon={{name: 'camera-off', type: 'feather'}}
+              containerStyle={{
+                             borderColor:'#ccc',
+                             borderWidth:1,
+                            // padding:1
+                            }}
+              //imageProps={{style:{borderRadius:50}}}
               source={{ uri: item.image_name }}
               onPress={() => this.setState({ modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}
               activeOpacity={0.2}
             />
+            :
+            <Avatar
+            size="medium"
+            rounded
+            icon={{name: 'camera-off', type: 'feather'}}
+            containerStyle={{borderColor:'#ccc',borderWidth:1,padding:1}}
+            imageProps={{style:{borderRadius:50}}}
+            source={{ uri: item.image_name }}
+            onPress={() => this.setState({ modalVisible: true,vehicle_number:item.LicenseNum},()=>this.setImageUrl(item.image_name))}
+            activeOpacity={0.2}
+          />
+            }
             <View style={{height:1.5,width:50,backgroundColor:'#e6e6e6',marginTop:10}}></View>
            <View style={{marginTop:10}}>
            <TouchableOpacity activeOpacity={.2}  
@@ -590,7 +612,7 @@ reload = () => {
               />
             </View>
           </View>
-          <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center' }}>
+          <View style={{ width:'100%', flexDirection: 'row',position:'absolute',backgroundColor:'#fff',alignItems:'center',marginTop:(Platform.OS=='ios'?20:0) }}>
 
             <TouchableOpacity activeOpacity={.3}
               style={{

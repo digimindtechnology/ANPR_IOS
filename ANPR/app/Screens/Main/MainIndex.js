@@ -8,7 +8,8 @@ import {
     ScrollView,
     Image,
     DrawerLayoutAndroid,
-    View,TouchableOpacity,
+    View,
+    TouchableOpacity,  
 } from 'react-native';
 import VehicleHistoricalLocation from './VehicleHistoricalLocation';
 import MapView from './MapView';
@@ -23,7 +24,8 @@ import OwnerDetails from './OwnerDetails'
 import Feedback from './FeedbackList';
 import AddFeedback from './AddFeedback';
 import OwnershipSearch from './OwnershipSearch';
-import Assets from '../../assets/stolen_icon.png'
+import VehicleSearch from './VehicleSearch';
+import Assets from '../../assets/stolen_icon.png';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -32,6 +34,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-simple-toast';
+import UserManual from './UserManual';
+import LargePhotoView from './LargePhotoView';
 
 const HomeTab = TabNavigator(
     {
@@ -84,11 +88,45 @@ const HomeTab = TabNavigator(
         
       }
 );
+const VehicleNotMatchedStack = StackNavigator(
+    {
+        VehicleNotMatched: {
+            screen: VehicleNotMatched,
+            navigationOptions: ({ navigation }) => ({
+                header: null,
+               
+            })
+        },
+        // LargePhotoView:{
+        //     screen:LargePhotoView,
+        //     navigationOptions:({navigation})=>({
+        //         header:null,
+        //     })
+        // }      
+    }
+)
+const ImpossibleSpaceStack = StackNavigator(
+    {
+        ImpossibleSpace: {
+            screen: ImpossibleSpace,
+            navigationOptions: ({ navigation }) => ({
+                header: null,
+               
+            })
+        },
+        // LargePhotoView:{
+        //     screen:LargePhotoView,
+        //     navigationOptions:({navigation})=>({
+        //         header:null,
+        //     })
+        // }            
+    }
+)
 
 const SuspectedVehicleTab = TabNavigator(
     {
         VehicleNotMatched: {
-            screen: VehicleNotMatched,
+            screen: VehicleNotMatchedStack,
             navigationOptions: ({ navigation }) => ({
                 header: null,
                 tabBarLabel: 'Not Found In MPTransport',
@@ -96,7 +134,7 @@ const SuspectedVehicleTab = TabNavigator(
             })
         },
         ImpossibleSpace: {
-            screen: ImpossibleSpace,
+            screen: ImpossibleSpaceStack,
             navigationOptions: ({ navigation }) => ({
                 header: null,
                 tabBarLabel: 'Impossible Space Time',
@@ -135,9 +173,15 @@ const FeedbackStack = StackNavigator(
 const CustomDrawerContentComponent = (props) => (
     <ScrollView>
       <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
+      {Platform.OS=='ios'?
         <View style={{width:'100%',height:200}}>
-            <Image source={require('../../assets/logo_bd.png')} style={{width:'100%',height:200}} resizeMode='center' />
+            <Image source={require('../../assets/logo_bd.png')} style={{width:'100%',height:200}} resizeMode='contain' />
         </View>
+       :
+       <View style={{width:'100%',height:200}}>
+          <Image source={require('../../assets/logo_bd.png')} style={{width:'100%',height:200}} resizeMode='contain' />
+       </View> 
+      }
         <DrawerItems {...props} />
       </SafeAreaView>
     </ScrollView>
@@ -164,7 +208,7 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'Stolen Vehicle',
                 //drawerIcon: ({ tintColor }) => <MaterialCommunityIcons name="car-wash" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 25, height: 25}}
+                style={{width: 26, height: 26}}
                 source={require('../../assets/stolen_icon.png')}
                 />
             })
@@ -176,7 +220,7 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'MPTransport',
                 //drawerIcon: ({ tintColor }) => <MaterialIcons name="search" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 26, height: 26}}
+                style={{width: 27, height: 27}}
                 source={require('../../assets/tranport.png')}
                 />
             })
@@ -187,11 +231,33 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'Suspected Vehicle',
                 //drawerIcon: ({ tintColor }) => <SimpleLineIcons name="question" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 21, height: 21}}
+                style={{width: 22, height: 22}}
                 source={require('../../assets/suspected_icon.png')}
                 />
             })
         },
+        // VehicleNotMatched: {
+        //     screen: VehicleNotMatched,
+        //     navigationOptions: ({ navigation }) =>({
+        //         drawerLabel: 'Vehicle Not Matched',
+        //         //drawerIcon: ({ tintColor }) => <SimpleLineIcons name="question" color={tintColor} size={20} />,
+        //         drawerIcon: <Image 
+        //         style={{width: 22, height: 22}}
+        //         source={require('../../assets/data_base.png')}
+        //         />
+        //     })
+        // },
+        // ImpossibleSpace: {
+        //     screen: ImpossibleSpace,
+        //     navigationOptions: ({ navigation }) =>({
+        //         drawerLabel: 'Impossible Space',
+        //         //drawerIcon: ({ tintColor }) => <SimpleLineIcons name="question" color={tintColor} size={20} />,
+        //         drawerIcon: <Image 
+        //         style={{width: 22, height: 22}}
+        //         source={require('../../assets/time.png')}
+        //         />
+        //     })
+        // },
         FeedbackStack: {
             screen: FeedbackStack,
             navigationOptions: ({ navigation }) => ({
@@ -216,6 +282,18 @@ const HomeDrawer = DrawerNavigator(
                 />
             })
         },
+        VehicleSearch:{
+            screen: VehicleSearch,
+            navigationOptions:({navigation})=>({
+                header:null,
+                drawerLabel: 'Vehicle Search',
+                drawerIcon: <Image
+                style={{width:26,height:26}}
+                source={require('../../assets/vehicleserch.png')}
+                />
+            })
+        },
+       
         Notification: {
             screen: Notification,
             navigationOptions: ({ navigation }) => ({
@@ -223,8 +301,19 @@ const HomeDrawer = DrawerNavigator(
                 drawerLabel: 'Notification',
                 //drawerIcon: ({ tintColor }) => <MaterialIcons name="notifications-none" color={tintColor} size={20} />,
                 drawerIcon: <Image 
-                style={{width: 26, height: 26}}
+                style={{width: 28, height: 28}}
                 source={require('../../assets/notification.png')}
+                />
+            })
+        },
+        UserManual:{
+            screen: UserManual,
+            navigationOptions: ({navigation})=>({
+                header:null,
+                drawerLabel:'User Manual',
+                drawerIcon:<Image
+                style={{width:25,height:25}}
+                source={require('../../assets/usermanual.png')}
                 />
             })
         },
