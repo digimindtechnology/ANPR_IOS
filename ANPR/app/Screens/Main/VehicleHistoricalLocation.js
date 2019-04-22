@@ -113,6 +113,7 @@ export default class Home extends Component {
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
+   
   }
 
   componentWillUnmount() {
@@ -366,7 +367,7 @@ reload = () => {
         // } logout={() => this.logout()} 
         />
 
-        <View style={{ width: '100%', margin: 0, marginTop: -90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>
+        <View style={{ width: '100%', margin: 0, marginTop:-90, paddingTop: 5, alignSelf: 'center', padding: 10, paddingTop: 0 }}>
           {/* <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <Text style={{ color: '#fff' }}>ANPR Log</Text>
           </View> */}
