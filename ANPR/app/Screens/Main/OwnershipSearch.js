@@ -903,7 +903,6 @@ reload = () => {
                            onPress={() => {this.setState({modalMaker:false},()=>this.getMakerClassificationSelectList())
                           }}
                            >
-                      {/* <Text style={{ color: 'white', textAlign:'center'}}> Back </Text> */}
                   </Button>
                   </View>
            </View>
