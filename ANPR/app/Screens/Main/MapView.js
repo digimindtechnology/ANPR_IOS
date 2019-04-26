@@ -140,6 +140,7 @@ export default class CustomMap extends Component {
 
     render() {
         return (
+           
             <View style={styles.container}>
                 {/* <CustomHeader height={1}
                     leftComponent={<Image
@@ -151,6 +152,7 @@ export default class CustomMap extends Component {
                     ref={ref => { this.map = ref; }}
                     provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                     style={styles.map}
+                    // customMapStyle={styles.map}
                     // region={{
                     //     latitude: 37.78825,
                     //     longitude: -122.4324,

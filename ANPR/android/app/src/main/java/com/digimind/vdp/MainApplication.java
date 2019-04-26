@@ -4,8 +4,6 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 
-
-
 import com.reactnative.photoview.PhotoViewPackage;
 import com.rumax.reactnative.pdfviewer.PDFViewPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
