@@ -28,6 +28,7 @@ import FormInput from '../../Components/FormInput';
 import MultiselectPicker from '../../Components/MultiselectPicker/MultiselectPicker';
 //import SearchableDropdown from 'react-native-searchable-dropdown';
 import Autocomplete from 'react-native-autocomplete-input';
+import IosAutoComplete from 'react-native-autocomplete';
 var Api = null;
 
 
@@ -77,8 +78,13 @@ export default class OwnershipSearch extends Component {
       modalModel:false,
       //focused:false
       page:0,
+      iosMakersData:[],
+      iosClassificationData:[],
       
     }
+    this.onTypingMaker = this.onTypingMaker.bind(this);
+    this.onTypingClassification = this.onTypingClassification.bind(this);
+    
     this.reload = this.reload.bind(this);
     this._didFocusSubscription = this.props.navigation.addListener(
       'didFocus',
@@ -383,11 +389,54 @@ reload = () => {
     this.setState({owner_Ship_Search_Records:[]});
     this.setState({page:0});    
   }
+
+  // ios autocomplete start
+  async onTypingMaker(text) {
+    // const makers = this.state.maker_Select_List.filter(maker =>
+    //   maker.Text.toLowerCase().startsWith(text.toLowerCase())
+    this.setState({maker_name:text});
+    const regex = new RegExp(`${text.toLowerCase().trim()}`, 'i');
+    console.log('regex',regex);
+    const makers=this.state.maker_Select_List.filter(maker => maker.Text.toLowerCase().search(regex) >= 0)
+    .map(maker => maker.Text);
+    console.log('makers',makers);
+    await this.setState({ iosMakersData: makers },()=>console.log('iosMakersData',this.state.iosMakersData));
+    console.log('makers2',makers);
+  }
+
+  onSelectMaker(value) {
+   //AlertIOS.alert("You choosed", value);
+   console.log('Maker selected:',value);
+   this.setState({maker_name:value});
+  }
+
+  async onTypingClassification(text) {
+    // const makers = this.state.maker_Select_List.filter(maker =>
+    //   maker.Text.toLowerCase().startsWith(text.toLowerCase())
+    this.setState({maker_classification_name:text});
+    const regex = new RegExp(`${text.toLowerCase().trim()}`, 'i');
+    console.log('regex',regex);
+    const modles=this.state.maker_Classification_Select_List.filter(model => model.Text.toLowerCase().search(regex) >= 0)
+    .map(model => model.Text);
+    console.log('makers',modles);
+    await this.setState({ iosClassificationData: modles },()=>console.log('iosMakersData',this.state.iosClassificationData));
+    console.log('makers2',modles);
+  }
+
+  onSelectClassification(value) {
+   //AlertIOS.alert("You choosed", value);
+   console.log('Maker selected:',value);
+   this.setState({maker_classification_name:value});
+  }
+  // ios autocomplete end
+
   render() {
     const {userInfo} = this.state;
+   
     const makerData=this.findMakerName();
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     const modelData=this.findModelName();
+    
     //const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     return (
       <ScrollView>
@@ -884,31 +933,37 @@ reload = () => {
            this.setState({modalMaker:false})
          }}
         >
-        
-          <ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
-            <View style={{marginTop:(Platform.OS=='ios'?20:0)}}>              
-          <Autocomplete
-                            //data={this.findMakerName()}
-                 data={makerData.length === 1&& comp(this.state.maker_name, makerData[0].Text) ? [] :makerData}
-                 defaultValue={this.state.maker_name}
-                 onChangeText={text => this.setState({ maker_name: text })}
-                 placeholder="Maker Name"
-                 autoFocus={true}
-                 fontSize={16}
-                 //lineStyle={{ overflow:'scroll'}}
-                 //listContainerStyle={{ overflow:'scroll'}}
-                 containerStyle={[styles.autocompleteContainer]}
-                 inputContainerStyle={{marginLeft:10,marginRight:10,marginTop:10}}
-                 //onChangeInput={()=>this.getMakerClassificationSelectList()}
-                 renderItem={item => (
-                 <TouchableOpacity onPress={() => this.setState({ maker_name: item.Text })}>
-                   <Text style={{fontSize:16}}>{item.Text}</Text>
-                 </TouchableOpacity>
-                 )}
-             />
-             {Platform.OS=='ios'?
 
-                 <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
+          {Platform.OS=='ios'?
+            <View style={iosAutocompleteStyles.container}>
+            
+            <IosAutoComplete
+              style={iosAutocompleteStyles.autocomplete}
+              suggestions={this.state.iosMakersData}
+              onTyping={this.onTypingMaker}
+              onSelect={this.onSelectMaker.bind(this)}
+              placeholder="Maker Name"
+              clearButtonMode="always"
+              returnKeyType="default"
+              textAlign="center"
+              clearTextOnFocus
+              autoCompleteTableTopOffset={10}
+              autoCompleteTableLeftOffset={20}
+              autoCompleteTableSizeOffset={-40}
+              autoCompleteTableBorderColor="lightblue"
+              autoCompleteTableBackgroundColor="azure"
+              autoCompleteTableCornerRadius={8}
+              autoCompleteTableBorderWidth={1}
+              autoCompleteFontSize={15}
+              autoCompleteRegularFontName="Helvetica Neue"
+              autoCompleteBoldFontName="Helvetica Bold"
+              autoCompleteTableCellTextColor={"dimgray"}
+              autoCompleteRowHeight={40}
+              autoCompleteFetchRequestDelay={100}
+              maximumNumberOfAutoCompleteRows={7}
+            />
+
+                 <View style={{flexDirection:'row',marginTop:300,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
                    <TouchableOpacity 
                       onPress={() => {this.setState({maker_name:'',modalMaker:false})}}>
                     <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
@@ -929,7 +984,29 @@ reload = () => {
                   </Card>
                   </TouchableOpacity>
                </View>  
-             :
+
+          </View>
+          :<ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
+            <View style={{marginTop:(Platform.OS=='ios'?20:0)}}>              
+          <Autocomplete
+                            //data={this.findMakerName()}
+                 data={makerData.length === 1&& comp(this.state.maker_name, makerData[0].Text) ? [] :makerData}
+                 defaultValue={this.state.maker_name}
+                 onChangeText={text => this.setState({ maker_name: text })}
+                 placeholder="Maker Name"
+                 autoFocus={true}
+                 fontSize={16}
+                 //lineStyle={{ overflow:'scroll'}}
+                 //listContainerStyle={{ overflow:'scroll'}}
+                 containerStyle={[styles.autocompleteContainer]}
+                 inputContainerStyle={{marginLeft:10,marginRight:10,marginTop:10}}
+                 //onChangeInput={()=>this.getMakerClassificationSelectList()}
+                 renderItem={item => (
+                 <TouchableOpacity onPress={() => this.setState({ maker_name: item.Text })}>
+                   <Text style={{fontSize:16}}>{item.Text}</Text>
+                 </TouchableOpacity>
+                 )}
+             />
              <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
                 <View style={{width:'50%'}}>
                  <Button 
@@ -959,9 +1036,9 @@ reload = () => {
                   </Button>
                   </View>
            </View>
-           }
+           
            </View>  
-          </ScrollView>
+          </ScrollView>}
          
         </Modal>
         {/* Maker Model End*/}
@@ -975,8 +1052,58 @@ reload = () => {
            this.setState({modalModel:false})
          }}
         >
-        
-          <ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
+         {Platform.OS=='ios'?
+            <View style={iosAutocompleteStyles.container}>
+            
+            <IosAutoComplete
+              style={iosAutocompleteStyles.autocomplete}
+              suggestions={this.state.iosClassificationData}
+              onTyping={this.onTypingClassification}
+              onSelect={this.onSelectClassification.bind(this)}
+              placeholder="Model"
+              clearButtonMode="always"
+              returnKeyType="default"
+              textAlign="center"
+              clearTextOnFocus
+              autoCompleteTableTopOffset={10}
+              autoCompleteTableLeftOffset={20}
+              autoCompleteTableSizeOffset={-40}
+              autoCompleteTableBorderColor="lightblue"
+              autoCompleteTableBackgroundColor="azure"
+              autoCompleteTableCornerRadius={8}
+              autoCompleteTableBorderWidth={1}
+              autoCompleteFontSize={15}
+              autoCompleteRegularFontName="Helvetica Neue"
+              autoCompleteBoldFontName="Helvetica Bold"
+              autoCompleteTableCellTextColor={"dimgray"}
+              autoCompleteRowHeight={40}
+              autoCompleteFetchRequestDelay={100}
+              maximumNumberOfAutoCompleteRows={7}
+            />
+
+                 <View style={{flexDirection:'row',marginTop:300,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
+                   <TouchableOpacity 
+                      onPress={() => {this.setState({maker_classification_name:'',modalModel:false})}}>
+                    <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                        <View style={{ flexDirection: 'row' }}>
+                           <MaterialCommunityIcons name="close-circle-outline" size={20} color="#fff" />
+                           <Text style={{ color: '#fff', marginLeft: 10 }}>Back</Text>
+                        </View>
+                   </Card>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{marginLeft:5}} 
+                     onPress={() => {this.setState({modalModel:false})}}>
+                   <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
+                     <View style={{ flexDirection: 'row' }}>
+                        <MaterialCommunityIcons name="check" size={20} color="#fff" />
+                        <Text style={{ color: '#fff', marginLeft: 10 }}>Submit</Text>
+                    </View>
+                  </Card>
+                  </TouchableOpacity>
+               </View>  
+
+          </View>
+          :<ScrollView style={{flex:1,backgroundColor:'#fff',padding:10}}>
             <View style={{marginTop:(Platform.OS=='ios'?20:0)}}>
             <Autocomplete
                             data={modelData.length === 1&& comp(this.state.maker_classification_name, modelData[0].Text) ? [] :modelData}
@@ -995,28 +1122,6 @@ reload = () => {
                              )}
                            />
 
-                            {Platform.OS=='ios'?
-                              <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
-                                <TouchableOpacity 
-                                  onPress={() => {this.setState({maker_classification_name:'',modalModel:false})}}>
-                                 <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
-                                   <View style={{ flexDirection: 'row' }}>
-                                     <MaterialCommunityIcons name="close-circle-outline" size={20} color="#fff" />
-                                     <Text style={{ color: '#fff', marginLeft: 10 }}>Back</Text>
-                                     </View>
-                                 </Card>
-                               </TouchableOpacity>
-                               <TouchableOpacity style={{marginLeft:5}} 
-                                 onPress={() => {this.setState({modalModel:false})}}>
-                                  <Card containerStyle={{ margin:0, padding: 10, paddingTop: 5, paddingBottom: 5, borderRadius: 20, backgroundColor: colors.headerColor }}>
-                                   <View style={{ flexDirection: 'row' }}>
-                                     <MaterialCommunityIcons name="check" size={20} color="#fff" />
-                                     <Text style={{ color: '#fff', marginLeft: 10 }}>Submit</Text>
-                                  </View>
-                                 </Card>
-                              </TouchableOpacity>
-                            </View>  
-                       :
            <View style={{flexDirection:'row',marginTop:50,marginBottom:50,marginLeft:50,marginRight:50,justifyContent:'center'}}>
                 <View style={{width:'50%'}}>
                  <Button 
@@ -1046,9 +1151,9 @@ reload = () => {
                   </Button>
                   </View>
            </View>
-          }
+          
            </View>  
-          </ScrollView>
+          </ScrollView>}
          
         </Modal>
 
@@ -1204,4 +1309,20 @@ const styles = StyleSheet.create({
   //zIndex: 1,
   //fontSize:18
 }
+});
+
+const iosAutocompleteStyles = StyleSheet.create({
+  autocomplete: {
+    alignSelf: "stretch",
+    height: 50,
+    margin: 10,
+    marginTop: 50,
+    backgroundColor: "#FFF",
+    borderColor: "lightblue",
+    borderWidth: 1
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#F5FCFF"
+  }
 });
