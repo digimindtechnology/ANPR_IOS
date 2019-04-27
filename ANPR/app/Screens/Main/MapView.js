@@ -111,7 +111,7 @@ export default class CustomMap extends Component {
         if (this.state.count < this.state.markers.length) {
         if (Platform.OS === 'android') {
             if (this.marker) {
-              this.marker._component.animateMarkerToCoordinate(this.state.markers[this.state.count], 1600);
+              this.marker._component.animateMarkerToCoordinate(this.state.markers[this.state.count], 3200);
             }
           } else {
             coordinate.timing(this.state.markers[this.state.count]).start();
@@ -119,13 +119,13 @@ export default class CustomMap extends Component {
             this.setState({ count: this.state.count + 1 });
             setTimeout(() => {
                 this.animate()
-            }, 1600);
+            }, 3200);
         }
         else{
             this.setState({ count: 1 });
             if (Platform.OS === 'android') {
                 if (this.marker) {
-                  this.marker._component.animateMarkerToCoordinate(this.state.markers[0], 1600);
+                  this.marker._component.animateMarkerToCoordinate(this.state.markers[0], 3200);
                 }
               } else {
                 coordinate.timing(this.state.markers[0]).start();
